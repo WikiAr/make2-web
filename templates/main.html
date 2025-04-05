@@ -1,0 +1,77 @@
+{% set cdn_base = "https://tools-static.wmflabs.org/cdnjs/ajax/libs" %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-bs-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="https://www.mediawiki.org/static/images/icons/mediawikiwiki.svg" type="image/svg+xml">
+    {% block title %}
+    <title>Categories titles</title>
+    {% endblock %}
+    <link href="{{ cdn_base }}/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ cdn_base }}/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel='stylesheet' type='text/css'>
+    <link href="{{ cdn_base }}/jqueryui/1.13.2/themes/base/jquery-ui.min.css" rel="stylesheet">
+    <link href="{{ cdn_base }}/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <link href="{{ cdn_base }}/bootstrap-select/1.14.0-beta3/css/bootstrap-select.css" rel='stylesheet' type='text/css'>
+
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='theme.css') }}" rel="stylesheet">
+    <script src="{{ cdn_base }}/jquery/3.7.0/jquery.min.js"></script>
+    <script src="{{ cdn_base }}/jqueryui/1.13.2/jquery-ui.min.js"></script>
+    <script src="{{ cdn_base }}/popper.js/2.11.8/umd/popper.min.js"></script>
+    <script src="{{ cdn_base }}/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+    <script src="{{ cdn_base }}/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js"></script>
+    <style>
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary shadow mb-4">
+        <div class="container-fluid">
+            <div class="nav_title">
+                <a class="navbar-brand fw-bold" href="/">
+                    <span class="tool_icon me-2"></span> Make2
+                </a>
+            </div>
+            <button class="navbar-toggler me_ms_by_dir" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav flex-row flex-wrap bd-navbar-nav">
+                    <li class="nav-item col-6 col-lg-auto">
+                        <a class="nav-link" href="/list"><i class="bi bi-braces-asterisk"></i>
+                            قائمة
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="d-flex">
+                <button class="theme-toggle btn btn-link me-ms-auto" aria-label="Toggle theme">
+                    <i class="bi bi-moon-stars-fill"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+    {% block content2 %}{% endblock %}
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='autocomplete.js') }}"></script>
+    <footer class="footer mt-5 py-0">
+    </footer>
+</body>
+
+</html>

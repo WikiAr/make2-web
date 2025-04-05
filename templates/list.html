@@ -1,0 +1,77 @@
+{% extends "main.html" %}
+
+{% block title %}
+<title>قائمة التصنيفات</title>
+{% endblock %}
+
+{% block content %}
+<div class="card card_form">
+    <div class="card-header text-center py-2">
+        <h4 class="card-title mb-0 d-flex align-items-center justify-content-center">
+            <i class="bi bi-list-check"></i> إرسال قائمة تصنيفات
+        </h4>
+    </div>
+    <div class="card-body p-3">
+        <form id="categoriesForm" onsubmit="sendCategories(); return false;">
+            <div class="form-group mb-3">
+                <label for="titles" class="form-label fw-bold mb-2">
+                    <i class="fas fa-list me-2"></i> أدخل التصنيفات (كل سطر = تصنيف)
+                </label>
+                <textarea id="titles" name="titles" rows="6" class="form-control input-group-input ltr_left">Category:Yemen
+                    Category:Yemen in 2025</textarea>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="result" class="form-label fw-bold mb-2">النتيجة</label>
+                <pre id="result" class="form-control bg-light p-2 border rounded" style="min-height: 100px;"></pre>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-outline-primary btn-lg">
+                    <span id="notloading">إرسال</span>
+                    <div id="loading" role="status" style="display: none;">
+                        <span class="spinner-grow spinner-grow-sm" aria-hidden="true"></span>
+                        <span role="status">جاري التحميل ...</span>
+                    </div>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>async function sendCategories() {
+        const titles = document.getElementById('titles').value.trim();
+        const resultBox = document.getElementById('result');
+        const loading = document.getElementById('loading');
+        const notloading = document.getElementById('notloading');
+
+        if (!titles) return;
+
+        loading.style.display = 'inline-block';
+        notloading.style.display = 'none';
+        resultBox.textContent = '';
+
+        try {
+            const titles_list = titles.split('\n').filter(t => t.trim() !== "");
+
+            const response = await fetch("/api/list", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ titles: titles_list })
+            });
+
+            const data = await response.json();
+            resultBox.textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+            resultBox.textContent = "حدث خطأ أثناء الاتصال بالخادم.";
+            console.error(error);
+        } finally {
+            loading.style.display = 'none';
+            notloading.style.display = 'inline';
+        }
+    }
+
+</script>
+{% endblock %}

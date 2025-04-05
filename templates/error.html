@@ -1,0 +1,17 @@
+{% extends "main.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header text-center alert-danger text-danger py-3">
+        <h4 class="card-title mb-0 d-flex align-items-center justify-content-center">
+            {{ title }}
+        </h4>
+    </div>
+    <div class="card-body p-4">
+        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+            {{ error }}
+            <span>{{ tt }}</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
