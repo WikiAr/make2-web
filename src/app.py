@@ -152,9 +152,21 @@ def get_titles():
 
 @app.route("/logs", methods=["GET"])
 def view_logs():
-    conn = sqlite3.connect(db_path)
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 50, type=int)
+
+    conn = sqlite3.connect("api_logs.db")
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM logs ORDER BY timestamp DESC")
+    # Get total count for pagination
+    cursor.execute("SELECT COUNT(*) FROM logs")
+    total_logs = cursor.fetchone()[0]
+
+    # Calculate offset
+    offset = (page - 1) * per_page
+
+    # Get paginated results
+    cursor.execute("SELECT * FROM logs ORDER BY timestamp DESC LIMIT ? OFFSET ?",
+                   (per_page, offset))
     logs = cursor.fetchall()
     conn.close()
 
@@ -169,8 +181,12 @@ def view_logs():
             "response_time": log[4],
             "timestamp": log[5]
         })
-
-    return render_template("logs.html", logs=log_list)
+    # ---
+    total_pages = (total_logs + per_page - 1) // per_page  # Ceiling division
+    # ---
+    return render_template("logs.html", logs=log_list,
+                           page=page, per_page=per_page,
+                           total_pages=total_pages)
 
 
 @app.route("/", methods=["GET"])
