@@ -19,14 +19,13 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             become armake sh -c "
-              rm -rf make2-web &&
-              git clone https://github.com/WikiAr/make2-web.git &&
-              cd make2-web &&
-              chmod +x web_sh &&
-              web_sh/install_make2.sh ${{ secrets.GF_TOKEN }} &&
-              web_sh/install_ma_lists.sh ${{ secrets.GF_TOKEN }} &&
-              web_sh/update1.sh &&
               rm -rf ~/make2-web &&
-              toolforge-webservice stop
+              git clone https://github.com/WikiAr/make2-web.git &&
+              chmod -R 6770 ~/make2-web &&
+              ~/make2-web/web_sh/install_make2.sh ${{ secrets.GF_TOKEN }} &&
+              ~/make2-web/web_sh/install_ma_lists.sh ${{ secrets.GF_TOKEN }} &&
+              ~/make2-web/web_sh/update1.sh &&
+              rm -rf ~/make2-web &&
+              toolforge-webservice stop &&
               toolforge-webservice start
             "
