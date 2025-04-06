@@ -27,5 +27,6 @@ jobs:
               ~/make2-web/web_sh/update1.sh &&
               rm -rf ~/make2-web &&
               toolforge-webservice stop &&
-              toolforge-webservice start
+              toolforge-webservice start %%
+              echo 'done..'
             "
