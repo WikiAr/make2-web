@@ -56,7 +56,7 @@ $(document).ready(function () {
                                 <!-- <div class="d-flex justify-content-between align-items-center">
                                     <input type="text" id="${random_id}" readonly class="form-control input-group-input" value="${data.result}">
                                     <button type="button" class="btn btn-sm btn-outline-secondary"
-                                        onclick="copyResult('${random_id}')">
+                                        onclick="copyResult('${random_id}', event)">
                                         <i class="bi bi-clipboard"></i>
                                     </button>
                                 </div> -->

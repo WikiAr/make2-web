@@ -30,6 +30,7 @@
                     </div>
                 </button>
             </div>
+        </form>
     </div>
 </div>
 <div class="card mt-3">
@@ -39,14 +40,13 @@
                 <label for="result" class="form-label fw-bold">النتيجة <span id="time"></span></label>
                 <span id="with_labs"></span>
                 <span id="no_labs"></span>
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyResult('result')">
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyResult('result', event)">
                     <i class="bi bi-clipboard"></i> نسخ
                 </button>
             </div>
             <textarea id="result" name="result" rows="6" class="form-control input-group-input ltr_left"
                 readonly></textarea>
         </div>
-        </form>
     </div>
 </div>
 

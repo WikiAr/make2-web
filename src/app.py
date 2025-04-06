@@ -28,14 +28,14 @@ CORS(app)  # ← لتفعيل CORS
 @app.route("/api/<title>", methods=["GET"])
 def get_title(title) -> str:
     # ---
-    start_time = time.time()
+    # start_time = time.time()
     # ---
     if event is None:
         return jsonify({"error": "حدث خطأ أثناء تحميل المكتبة"})
     # ---
     json_result = event([title], tst_prnt_all=False) or {"result": ""}
     # ---
-    delta = time.time() - start_time
+    # delta = time.time() - start_time
     # ---
     data = {}
     # ---
