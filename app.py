@@ -12,14 +12,17 @@ if Path(path1).exists():
 else:
     sys.path.append(str(path2))
 
-from make2 import event
-
 app = Flask(__name__)
 CORS(app)  # ← لتفعيل CORS
 
 
 @app.route("/api/<title>", methods=["GET"])
 def get_title(title) -> str:
+    # ---
+    try:
+        from make2 import event
+    except:
+        return jsonify({"error": "حدث خطأ أثناء تحميل المكتبة"})
     # ---
     json_result = event([title], tst_prnt_all=False) or {"result": ""}
     # ---
@@ -41,7 +44,13 @@ def get_titles():
     # print("get_titles:")
     # print(titles)
 
+    try:
+        from make2 import event
+    except:
+        return jsonify({"error": "حدث خطأ أثناء تحميل المكتبة"})
+    # ---
     json_result = event(titles, tst_prnt_all=False) or {}
+    # ---
     return jsonify(json_result)
 
 
