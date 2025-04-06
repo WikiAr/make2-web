@@ -3,6 +3,7 @@
 {% block title %}
 <title>قائمة التصنيفات</title>
 {% endblock %}
+{% set examples = "Category:Yemen\nCategory:Yemen in 2025" %}
 
 {% block content %}
 <div class="card card_form">
@@ -17,13 +18,13 @@
                 <label for="titles" class="form-label fw-bold mb-2">
                     <i class="fas fa-list me-2"></i> أدخل التصنيفات (كل سطر = تصنيف)
                 </label>
-                <textarea id="titles" name="titles" rows="6" class="form-control input-group-input ltr_left">Category:Yemen
-                    Category:Yemen in 2025</textarea>
+                <textarea id="titles" name="titles" rows="6"
+                    class="form-control input-group-input ltr_left">{{ examples }}</textarea>
             </div>
             <div class="form-group mb-3">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <label for="result" class="form-label fw-bold">النتيجة <span id="time"></span></label>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyResult()">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyResult('result')">
                         <i class="bi bi-clipboard"></i> نسخ
                     </button>
                 </div>
@@ -42,22 +43,6 @@
         </form>
     </div>
 </div>
-
-<script>
-    function copyResult() {
-        const resultText = document.getElementById('result');
-        resultText.select();
-        document.execCommand('copy');
-
-        // Optional: Show feedback
-        const copyBtn = event.currentTarget;
-        const originalText = copyBtn.innerHTML;
-        copyBtn.innerHTML = '<i class="bi bi-check2"></i> تم النسخ';
-        setTimeout(() => {
-            copyBtn.innerHTML = originalText;
-        }, 2000);
-    }
-</script>
 
 <script src="{{ url_for('static', filename='api_list.js') }}"></script>
 {% endblock %}

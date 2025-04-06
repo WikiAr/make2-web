@@ -70,6 +70,21 @@
     {% block content2 %}{% endblock %}
     <script src="{{ url_for('static', filename='theme.js') }}"></script>
     <script src="{{ url_for('static', filename='autocomplete.js') }}"></script>
+    <script>
+        function copyResult(id) {
+            const resultText = document.getElementById(id); // 'result'
+            resultText.select();
+            document.execCommand('copy');
+
+            // Optional: Show feedback
+            const copyBtn = event.currentTarget;
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i class="bi bi-check2"></i> تم النسخ';
+            setTimeout(() => {
+                copyBtn.innerHTML = originalText;
+            }, 2000);
+        }
+    </script>
     <footer class="footer mt-5 py-0">
     </footer>
 </body>
