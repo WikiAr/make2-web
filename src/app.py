@@ -153,9 +153,9 @@ def get_titles():
 @app.route("/logs", methods=["GET"])
 def view_logs():
     page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 50, type=int)
+    per_page = request.args.get('per_page', 8, type=int)
 
-    conn = sqlite3.connect("api_logs.db")
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     # Get total count for pagination
     cursor.execute("SELECT COUNT(*) FROM logs")
@@ -169,6 +169,8 @@ def view_logs():
                    (per_page, offset))
     logs = cursor.fetchall()
     conn.close()
+
+    # print(f"{page=}, {per_page=}")
 
     # تحويل السجلات إلى قائمة قابلة للقراءة
     log_list = []
