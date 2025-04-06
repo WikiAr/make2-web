@@ -37,6 +37,8 @@ source $HOME/www/python/venv/bin/activate
 
 pip install -r "$TARGET_DIR"/requirements.txt
 
-webservice python3.11 restart
+exit
+
+# webservice python3.11 restart
 
 # toolforge-jobs run updatex --image python3.11 --command "$HOME/web_sh/update1.sh update"
