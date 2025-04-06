@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 import sys
+import time
 
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
@@ -26,15 +28,24 @@ CORS(app)  # ← لتفعيل CORS
 @app.route("/api/<title>", methods=["GET"])
 def get_title(title) -> str:
     # ---
+    start_time = time.time()
+    # ---
     if event is None:
         return jsonify({"error": "حدث خطأ أثناء تحميل المكتبة"})
     # ---
     json_result = event([title], tst_prnt_all=False) or {"result": ""}
     # ---
-    for x, v in json_result.items():
-        return jsonify({"result": v})
+    delta = time.time() - start_time
     # ---
-    return jsonify(json_result)
+    data = {}
+    # ---
+    for x, v in json_result.items():
+        data = {"result": v}
+        break
+    # ---
+    # data["time"] = delta
+    # ---
+    return jsonify(data)
 
 
 @app.route("/api/list", methods=["POST"])
@@ -52,9 +63,18 @@ def get_titles():
     if event is None:
         return jsonify({"error": "حدث خطأ أثناء تحميل المكتبة"})
     # ---
+    start_time = time.time()
+    # ---
     json_result = event(titles, tst_prnt_all=False) or {}
     # ---
-    return jsonify(json_result)
+    delta = time.time() - start_time
+    # ---
+    data = {
+        "results" : json_result,
+        "time": delta
+    }
+    # ---
+    return jsonify(data)
 
 
 @app.route("/", methods=["GET"])

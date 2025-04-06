@@ -20,13 +20,16 @@ $(document).ready(function () {
         // إظهار "جاري التحميل"
         $loadingDiv.show();
         $resultInput.val("");
-
+        var timestart = new Date().getTime();
         $.ajax({
             url: `api/${encodedCategory}`,
             method: "GET",
             dataType: "json",
             success: function (data) {
                 $resultInput.val(data.result);
+                var timeend = new Date().getTime();
+                var time = (timeend - timestart) / 1000;
+                $("#time").text("(" + time.toFixed(2) + " ثانية)");
             },
             error: function (xhr, status, error) {
                 $resultInput.val("فشل في جلب البيانات");
