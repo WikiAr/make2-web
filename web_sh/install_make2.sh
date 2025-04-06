@@ -1,0 +1,54 @@
+#!/bin/bash
+TOKEN="${1:-}"
+
+if [ -z "$TOKEN" ]; then
+    echo "Usage: $0 <TOKEN>"
+    exit 1
+fi
+
+REPO_URL="https://MrIbrahem:${TOKEN}@github.com/MrIbrahem/make2.git"
+
+TARGET_DIR="$HOME/www/python/bots/make2"
+
+if [ ! -d "$TARGET_DIR" ]; then
+    mkdir -p "$TARGET_DIR"
+    echo "Directory created: $TARGET_DIR"
+    chmod 6770 "$TARGET_DIR"
+else
+    echo "Directory already exists: $TARGET_DIR"
+fi
+
+CLONE_DIR="$HOME/make2_x"
+
+# Navigate to the project directory
+cd $HOME || exit
+
+# Remove any existing clone directory
+rm -rf "$CLONE_DIR"
+
+# Clone the repository
+if git clone "$REPO_URL" "$CLONE_DIR"; then
+    echo "Repository cloned successfully."
+else
+    echo "Failed to clone the repository." >&2
+    exit 1
+fi
+
+cp "$CLONE_DIR/requirements.in" "$TARGET_DIR/requirements.in" -v
+
+# Optional: remove any non-Python files
+# find "$CLONE_DIR" -type f ! -name "*.py" -exec rm -rf {} \;
+
+# Copy the required files to the target directory
+cp -rf "$CLONE_DIR/"* "$TARGET_DIR/" -v
+
+# Optional: Set permissions
+# chmod -R 6770 "$TARGET_DIR"
+find "$TARGET_DIR" -type f ! -name "*.pyc" -exec chmod 6770 {} -v \;
+
+# Optional: Install dependencies
+#"$HOME/local/bin/python3" -m pip install -r "$TARGET_DIR/requirements.in"
+
+# Remove the "$CLONE_DIR" directory.
+rm -rf "$CLONE_DIR"
+

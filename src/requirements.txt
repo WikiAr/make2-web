@@ -1,0 +1,6 @@
+wikitextparser
+flask
+flask_cors
+tqdm
+psutil
+humanize

@@ -1,0 +1,32 @@
+name: deploy.yml
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          port: 22
+          request_pty: true
+          script_stop: true
+          key: ${{ secrets.KEY }}
+          script: |
+            become armake sh -c "
+              rm -rf make2-web &&
+              git clone https://github.com/WikiAr/make2-web.git &&
+              cd make2-web &&
+              chmod +x web_sh &&
+              web_sh/install_make2.sh ${{ secrets.GF_TOKEN }} &&
+              web_sh/install_ma_lists.sh ${{ secrets.GF_TOKEN }} &&
+              web_sh/update1.sh &&
+              rm -rf ~/make2-web &&
+              toolforge-webservice stop
+              toolforge-webservice start
+            "

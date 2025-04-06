@@ -4,15 +4,20 @@ from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 from pathlib import Path
 
-path1 = "/data/project/himo/bots/ma"
-path2 = "i:/core/bots/ma"
+sys.argv.append("noprint")
+path1 = "i:/core/bots/ma"
+
+path2 = Path(__file__).parent.parent / "bots"  # $HOME/www/python/bots
 
 if Path(path1).exists():
     sys.path.append(path1)
-elif Path(path2).exists():
-    sys.path.append(path2)
+else:
+    sys.path.append(str(path2))
 
-from make2 import event
+try:
+    from make2 import event
+except:
+    event = None
 
 app = Flask(__name__)
 CORS(app)  # ← لتفعيل CORS
@@ -21,12 +26,16 @@ CORS(app)  # ← لتفعيل CORS
 @app.route("/api/<title>", methods=["GET"])
 def get_title(title) -> str:
     # ---
+    if event is None:
+        return jsonify({"error": "حدث خطأ أثناء تحميل المكتبة"})
+    # ---
     json_result = event([title], tst_prnt_all=False) or {"result": ""}
     # ---
     for x, v in json_result.items():
         return jsonify({"result": v})
     # ---
     return jsonify(json_result)
+
 
 @app.route("/api/list", methods=["POST"])
 def get_titles():
@@ -40,7 +49,11 @@ def get_titles():
     # print("get_titles:")
     # print(titles)
 
+    if event is None:
+        return jsonify({"error": "حدث خطأ أثناء تحميل المكتبة"})
+    # ---
     json_result = event(titles, tst_prnt_all=False) or {}
+    # ---
     return jsonify(json_result)
 
 
