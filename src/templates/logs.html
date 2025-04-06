@@ -1,0 +1,45 @@
+{% extends "main.html" %}
+{% block title %}
+<title>Categories titles</title>
+{% endblock %}
+
+{% block content %}
+<div class="card mt-3">
+    <div class="card-header">
+        <h4 class="card-title mb-0 d-flex align-items-center justify-content-center">
+            سجلات
+        </h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-striped table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th>المعرف</th>
+                            <th>API</th>
+                            <th>بيانات الطلب</th>
+                            <th>حالة الطلب</th>
+                            <th>مدة الاستجابة</th>
+                            <th>الوقت</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td>{{ log.id }}</td>
+                            <td>{{ log.endpoint }}</td>
+                            <td>{{ log.request_data }}</td>
+                            <td>{{ log.response_status }}</td>
+                            <td>{{ log.response_time }}</td>
+                            <td>{{ log.timestamp }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
