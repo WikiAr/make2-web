@@ -31,13 +31,18 @@ fi
 cp -rf "$HOME"/srcx/src/* "$TARGET_DIR/" -v || exit 1
 
 # Remove the "$CLONE_DIR" directory.
-rm -rf "$CLONE_DIR"
+# rm -rf "$CLONE_DIR"
 
-source $HOME/www/python/venv/bin/activate
+# source $HOME/www/python/venv/bin/activate
 
-pip install -r "$TARGET_DIR"/requirements.txt
+if source "$HOME/www/python/venv/bin/activate"; then
+    # pip install -r $HOME/www/python/src/requirements.txt
+    pip install -r "$TARGET_DIR"/requirements.txt
+    # exit 1
+else
+    echo "Failed to activate virtual environment" >&2
+fi
 
-exit
 
 # webservice python3.11 restart
 

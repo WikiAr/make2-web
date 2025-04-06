@@ -27,16 +27,15 @@ if ! git clone --branch "$BRANCH" "$REPO_URL" "$HOME/www/python/src"; then
     exit 1
 fi
 
-#source "$HOME/www/python/venv/bin/activate"
+# Activate virtual environment with error handling
 
-# python3 -m pip install --upgrade pip
-# python3 -m pip install -r $HOME/www/python/src/requirements.txt
+if source "$HOME/www/python/venv/bin/activate"; then
+    pip install -r $HOME/www/python/src/requirements.txt
+    # exit 1
+else
+    echo "Failed to activate virtual environment" >&2
+fi
 
-source $HOME/www/python/venv/bin/activate
-
-pip install -r $HOME/www/python/src/requirements.txt
-
-webservice python3.11 restart
-
+# webservice python3.11 restart
 
 # toolforge-jobs run updatex --image python3.11 --command "$HOME/web_sh/update.sh update"
