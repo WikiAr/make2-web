@@ -27,5 +27,6 @@ jobs:
               web_sh/install_make2.sh ${{ secrets.GF_TOKEN }} &&
               web_sh/install_ma_lists.sh ${{ secrets.GF_TOKEN }} &&
               rm -rf ~/make2-web &&
-              toolforge-webservice restart
+              toolforge-webservice stop
+              toolforge-webservice start
             "

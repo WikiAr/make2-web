@@ -4,6 +4,7 @@ from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 from pathlib import Path
 
+sys.argv.append("noprint")
 path1 = "i:/core/bots/ma"
 path2 = Path(__file__).parent
 
