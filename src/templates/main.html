@@ -60,7 +60,7 @@
             </div>
         </div>
     </nav>
-    <div class="container">
+    <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 {% block content %}{% endblock %}
@@ -79,6 +79,9 @@
             // Optional: Show feedback
             const copyBtn = event.currentTarget;
             const originalText = copyBtn.innerHTML;
+            // ---
+            if (resultText.value == '') return;
+            // ---
             copyBtn.innerHTML = '<i class="bi bi-check2"></i> تم النسخ';
             setTimeout(() => {
                 copyBtn.innerHTML = originalText;

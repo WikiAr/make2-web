@@ -13,7 +13,6 @@ $(document).ready(function () {
         if (!category) {
             $categoryInput.attr("placeholder", "يرجى إدخال العنوان");
             $categoryInput.addClass("alert-danger");
-            // alert("يرجى إدخال العنوان أولاً.");
             return;
         }
 
@@ -34,22 +33,37 @@ $(document).ready(function () {
             dataType: "json",
             success: function (data) {
                 // ---
-                $resultInput.val(data.result);
-                // ---
-                // add result to results
-                $resultsTable.append(`
-                    <tr>
-                        <td>${category}</td>
-                        <td>
-                        ${data.result}
-                        </td>
-                    </tr>
-                    `);
-                // ---
                 if (data.result == "") {
-                    // $resultInput.val();
                     $resultInput.attr("placeholder", "لا يوجد نتيجة");
                     $resultInput.addClass("alert-danger");
+                } else {
+                    $resultInput.val(data.result);
+                    // ---
+                    let random_id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                    // ---
+                    // add result to results with copy button
+                    $resultsTable.append(`
+                        <tr>
+                            <td class="ltr_left">
+                                <span class="ltr_left">
+                                    ${category}
+                                </span>
+                            </td>
+                            <td>
+                                <span id="${random_id}">
+                                    ${data.result}
+                                </span>
+                                <!-- <div class="d-flex justify-content-between align-items-center">
+                                    <input type="text" id="${random_id}" readonly class="form-control input-group-input" value="${data.result}">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        onclick="copyResult('${random_id}')">
+                                        <i class="bi bi-clipboard"></i>
+                                    </button>
+                                </div> -->
+                            </td>
+                        </tr>
+                    `);
+                    // ---
                 }
                 // ---
                 var timeend = new Date().getTime();
