@@ -27,7 +27,8 @@ else
 fi
 
 # Copy the required files to the target directory
-cp -rf "$CLONE_DIR/src/"* "$TARGET_DIR/" -v
+# cp -rf ~/srcx/src/* "$HOME/www/python/src/" -v
+cp -rf "$HOME"/srcx/src/* "$TARGET_DIR/" -v || exit 1
 
 # Remove the "$CLONE_DIR" directory.
 rm -rf "$CLONE_DIR"
