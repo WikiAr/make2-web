@@ -25,12 +25,19 @@ async function sendCategories() {
         const data = await response.json();
         // const time = data.time;
         // ---
+        const with_labs = data.with_labs;
+        const no_labs = data.no_labs;
+        // ---
+        $("#with_labs").text("بتسميات: " + with_labs);
+        $("#no_labs").text("بدون تسميات: " + no_labs);
+        // ---
         var timeend = new Date().getTime();
         var time = (timeend - timestart) / 1000;
         // ---
         $("#time").text("(" + time.toFixed(2) + " ثانية)");
         // ---
         resultBox.textContent = JSON.stringify(data.results, null, 2);
+        // ---
     } catch (error) {
         resultBox.textContent = "حدث خطأ أثناء الاتصال بالخادم.";
         console.error(error);

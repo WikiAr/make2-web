@@ -65,12 +65,20 @@ def get_titles():
     # ---
     start_time = time.time()
     # ---
-    json_result = event(titles, tst_prnt_all=False) or {}
+    json_result, no_labs = event(titles, return_no_labs=True, tst_prnt_all=False) or {}
+    # ---
+    len_result = len(json_result)
+    # ---
+    for x in no_labs:
+        if x not in json_result.keys():
+            json_result[x] = ""
     # ---
     delta = time.time() - start_time
     # ---
     data = {
         "results" : json_result,
+        "no_labs": len(no_labs),
+        "with_labs": len_result,
         "time": delta
     }
     # ---
