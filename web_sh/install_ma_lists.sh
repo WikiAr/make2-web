@@ -9,7 +9,7 @@ echo "token: $TOKEN"
 
 REPO_URL="https://MrIbrahem:${TOKEN}@github.com/MrIbrahem/ma_lists.git"
 
-TARGET_DIR="$HOME/www/python/src/ma_lists"
+TARGET_DIR="$HOME/www/python/bots/ma_lists"
 
 if [ ! -d "$TARGET_DIR" ]; then
     mkdir -p "$TARGET_DIR"

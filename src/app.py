@@ -6,7 +6,8 @@ from pathlib import Path
 
 sys.argv.append("noprint")
 path1 = "i:/core/bots/ma"
-path2 = Path(__file__).parent
+
+path2 = Path(__file__).parent.parent / "bots"  # $HOME/www/python/bots
 
 if Path(path1).exists():
     sys.path.append(path1)

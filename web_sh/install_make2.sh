@@ -8,7 +8,7 @@ fi
 
 REPO_URL="https://MrIbrahem:${TOKEN}@github.com/MrIbrahem/make2.git"
 
-TARGET_DIR="$HOME/www/python/src/make2"
+TARGET_DIR="$HOME/www/python/bots/make2"
 
 if [ ! -d "$TARGET_DIR" ]; then
     mkdir -p "$TARGET_DIR"
