@@ -17,9 +17,6 @@ else
     exit 1
 fi
 
-TARGET_DIR="$HOME/www/python/src/make2"
-CLONE_DIR="$HOME/make2_x"
-
 REPO_URL="https://github.com/WikiAr/make2-web.git"
 
 if ! git clone --branch "$BRANCH" "$REPO_URL" "$HOME/www/python/src"; then
