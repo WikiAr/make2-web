@@ -11,9 +11,9 @@
         </h4>
     </div>
     <div class="card-body">
+        <!-- Filter Form -->
         <form method="get" action="{{ url_for('view_logs') }}"
             class="form-inline mb-3 d-flex justify-content-center align-items-center gap-2">
-
             <label for="per_page" class="me-2">عدد السجلات:</label>
             <select name="per_page" id="per_page" class="form-select w-auto">
                 {% for n in [10, 20, 50, 100, 150, 200] %}
