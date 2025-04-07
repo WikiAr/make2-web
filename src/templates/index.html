@@ -15,25 +15,35 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group mb-2">
-                        <label for="category" class="form-label fw-bold mb-2">
-                            <i class="fas fa-link me-2"></i> ادخل العنوان
-                            <div class="spinner-border spinner-border-sm" id="autocomplete_loading" role="status"
-                                style="display: none;">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        </label>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label for="category" class="form-label fw-bold mb-2">
+                                <i class="fas fa-link me-2"></i> ادخل العنوان
+                                <div class="spinner-border spinner-border-sm " id="autocomplete_loading" role="status"
+                                    style="display: none;">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </label>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="randomCategory()">
+                                <i class="bi bi-shuffle"></i> عشوائي
+                            </button>
+                        </div>
                         <div class="input-group input-group-lg">
                             <input type="text" id="category" required name="category"
-                                class="form-control input-group-input ltr_left" placeholder="Category:Yemen"
-                                value="Category:">
+                                class="form-control input-group-input ltr_left" placeholder="Category:Yemen" value="">
                         </div>
                     </div>
                 </div>
                 <div class="col-md-12">
                     <div class="form-group mb-2">
-                        <label for="result" class="form-label fw-bold mb-2">
-                            النتيجة
-                        </label>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label for="result" class="form-label fw-bold mb-2">
+                                النتيجة <span id="time"></span>
+                            </label>
+                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                onclick="copyResult('result', event)">
+                                <i class="bi bi-clipboard"></i> نسخ
+                            </button>
+                        </div>
                         <div class="input-group input-group-lg">
                             <input type="text" id="result" readonly name="result"
                                 class="form-control input-group-input">
@@ -52,7 +62,26 @@
             </div>
         </button>
     </div>
+</div>
+<div class="card mt-3">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-striped table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">العنوان</th>
+                            <th scope="col">الوصف</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results_table">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
     <script src="{{ url_for('static', filename='api.js') }}"></script>
+    <script src="{{ url_for('static', filename='random.js') }}"></script>
 </div>
 
 {% endblock %}

@@ -51,6 +51,11 @@
                             قائمة
                         </a>
                     </li>
+                    <li class="nav-item col-6 col-lg-auto">
+                        <a class="nav-link" href="/logs"><i class="bi bi-journal-text"></i>
+                            سجلات
+                        </a>
+                    </li>
                 </ul>
             </div>
             <div class="d-flex">
@@ -60,7 +65,7 @@
             </div>
         </div>
     </nav>
-    <div class="container">
+    <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 {% block content %}{% endblock %}
@@ -70,6 +75,37 @@
     {% block content2 %}{% endblock %}
     <script src="{{ url_for('static', filename='theme.js') }}"></script>
     <script src="{{ url_for('static', filename='autocomplete.js') }}"></script>
+    <script>
+        function copyResult(id, event) {
+            const resultText = document.getElementById(id);
+            if (resultText.value === '') return;
+
+            // Get button for feedback
+            const copyBtn = event.currentTarget;
+            const originalText = copyBtn.innerHTML;
+
+            // Use Clipboard API
+            navigator.clipboard.writeText(resultText.value)
+                .then(() => {
+                    // Success feedback
+                    copyBtn.innerHTML = '<i class="bi bi-check2"></i> نُسخ النص';
+                    // Accessibility announcement
+                    const announcement = document.createElement('div');
+                    announcement.setAttribute('aria-live', 'polite');
+                    announcement.classList.add('visually-hidden');
+                    announcement.textContent = 'تم نسخ النص';
+                    document.body.appendChild(announcement);
+
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalText;
+                        document.body.removeChild(announcement);
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+        }
+    </script>
     <footer class="footer mt-5 py-0">
     </footer>
 </body>

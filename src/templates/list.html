@@ -3,29 +3,24 @@
 {% block title %}
 <title>قائمة التصنيفات</title>
 {% endblock %}
+{% set examples = "Category:Yemen\nCategory:Yemen in 2025" %}
 
 {% block content %}
 <div class="card card_form">
     <div class="card-header text-center py-2">
         <h4 class="card-title mb-0 d-flex align-items-center justify-content-center">
-            <i class="bi bi-list-check"></i> إرسال قائمة تصنيفات
+            <i class="bi bi-list-check ms-2"></i> إرسال قائمة تصنيفات
         </h4>
     </div>
     <div class="card-body p-3">
         <form id="categoriesForm" onsubmit="sendCategories(); return false;">
             <div class="form-group mb-3">
                 <label for="titles" class="form-label fw-bold mb-2">
-                    <i class="fas fa-list me-2"></i> أدخل التصنيفات (كل سطر = تصنيف)
+                    <i class="fas fa-list ms-2"></i> أدخل التصنيفات (كل سطر = تصنيف)
                 </label>
-                <textarea id="titles" name="titles" rows="6" class="form-control input-group-input ltr_left">Category:Yemen
-                    Category:Yemen in 2025</textarea>
+                <textarea id="titles" name="titles" rows="6"
+                    class="form-control input-group-input ltr_left">{{ examples }}</textarea>
             </div>
-
-            <div class="form-group mb-3">
-                <label for="result" class="form-label fw-bold mb-2">النتيجة</label>
-                <pre id="result" class="form-control bg-light p-2 border rounded" style="min-height: 100px;"></pre>
-            </div>
-
             <div class="d-grid gap-2">
                 <button type="submit" class="btn btn-outline-primary btn-lg">
                     <span id="notloading">إرسال</span>
@@ -38,40 +33,22 @@
         </form>
     </div>
 </div>
+<div class="card mt-3">
+    <div class="card-body p-3">
+        <div class="form-group mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <label for="result" class="form-label fw-bold">النتيجة <span id="time"></span></label>
+                <span id="with_labs"></span>
+                <span id="no_labs"></span>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyResult('result', event)">
+                    <i class="bi bi-clipboard"></i> نسخ
+                </button>
+            </div>
+            <textarea id="result" name="result" rows="6" class="form-control input-group-input ltr_left"
+                readonly></textarea>
+        </div>
+    </div>
+</div>
 
-<script>async function sendCategories() {
-        const titles = document.getElementById('titles').value.trim();
-        const resultBox = document.getElementById('result');
-        const loading = document.getElementById('loading');
-        const notloading = document.getElementById('notloading');
-
-        if (!titles) return;
-
-        loading.style.display = 'inline-block';
-        notloading.style.display = 'none';
-        resultBox.textContent = '';
-
-        try {
-            const titles_list = titles.split('\n').filter(t => t.trim() !== "");
-
-            const response = await fetch("/api/list", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ titles: titles_list })
-            });
-
-            const data = await response.json();
-            resultBox.textContent = JSON.stringify(data, null, 2);
-        } catch (error) {
-            resultBox.textContent = "حدث خطأ أثناء الاتصال بالخادم.";
-            console.error(error);
-        } finally {
-            loading.style.display = 'none';
-            notloading.style.display = 'inline';
-        }
-    }
-
-</script>
+<script src="{{ url_for('static', filename='api_list.js') }}"></script>
 {% endblock %}

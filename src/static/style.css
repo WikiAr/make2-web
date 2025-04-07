@@ -27,6 +27,11 @@
     margin-inline-start: auto !important;
 }
 
+.alert-danger {
+    border-color: var(--bs-danger-border-subtle);
+    border-width: 2px;
+}
+
 .tool_icon {
     display: inline-block;
     width: 30px;
