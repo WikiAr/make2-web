@@ -26,7 +26,7 @@ except:
 app = Flask(__name__)
 CORS(app)  # ← لتفعيل CORS
 
-db_path = Path(__file__).parent / "api_logs.db"
+db_path = Path(__file__).parent / "logs.db"
 db_path = str(db_path)
 
 
@@ -227,7 +227,7 @@ def internal_server_error(e):
 if __name__ == "__main__":
     init_db()
     # ---
-    # debug = True
-    debug = False
+    debug = True
+    # debug = False
     # ---
     app.run(debug=debug)

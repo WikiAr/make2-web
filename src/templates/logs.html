@@ -64,10 +64,10 @@
                             {% set start_page = [end_page - 4, 1]|max %}
 
                             {% for p in range(start_page, end_page + 1) %}
-                            <li class="page-item {% if p == page %}active{% endif %}">
-                                <a class="page-link"
-                                    href="{{ url_for('view_logs', page=p, per_page=per_page) }}">{{ p }}</a>
-                            </li>
+                                <li class="page-item {% if p == page %}active{% endif %}">
+                                    <a class="page-link"
+                                        href="{{ url_for('view_logs', page=p, per_page=per_page) }}">{{ p }}</a>
+                                </li>
                             {% endfor %}
 
                             <!-- Next page -->
