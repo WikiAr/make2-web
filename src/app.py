@@ -149,34 +149,32 @@ def get_titles():
     # ---
     return jsonify(response_data)
 
-
 @app.route("/logs", methods=["GET"])
 def view_logs():
     # ---
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 10, type=int)
     order = request.args.get('order', 'asc').upper()
-    # ---
-    # Validate pagination parameters
-    page = max(1, page)  # Ensure page is at least 1
-    per_page = max(1, min(100, per_page))  # Ensure per_page is between 1 and 100
-    # ---
+
+    # Validate values
+    page = max(1, page)
+    per_page = max(1, min(100, per_page))
     if order not in ['ASC', 'DESC']:
         order = 'ASC'
-    # ---
+
     try:
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
-        # Get total count for pagination
+
+        # Total logs count
         cursor.execute("SELECT COUNT(*) FROM logs")
         total_logs = cursor.fetchone()[0]
 
-        # Calculate offset
+        # Offset for pagination
         offset = (page - 1) * per_page
 
-        # Get paginated results
+        # Fetch logs with ordering
         cursor.execute(f"SELECT * FROM logs ORDER BY timestamp {order} LIMIT ? OFFSET ?", (per_page, offset))
-
         logs = cursor.fetchall()
         conn.close()
     except sqlite3.Error as e:
@@ -184,9 +182,7 @@ def view_logs():
         logs = []
         total_logs = 0
 
-    # print(f"{page=}, {per_page=}")
-
-    # تحويل السجلات إلى قائمة قابلة للقراءة
+    # Convert to list of dicts
     log_list = []
     for log in logs:
         log_list.append({
@@ -197,20 +193,20 @@ def view_logs():
             "response_time": log[4],
             "timestamp": log[5]
         })
-    # ---
-    total_pages = (total_logs + per_page - 1) // per_page  # Ceiling division
-    # ---
+
+    # Pagination calculations
+    total_pages = (total_logs + per_page - 1) // per_page
     start_log = (page - 1) * per_page + 1
     end_log = min(page * per_page, total_logs)
-    # ---
     start_page = max(1, page - 2)
     end_page = min(start_page + 4, total_pages)
     start_page = max(1, end_page - 4)
-    # ---
+
     return render_template(
         "logs.html",
         logs=log_list,
-        page=page, per_page=per_page,
+        page=page,
+        per_page=per_page,
         total_pages=total_pages,
         total_logs=total_logs,
         start_log=start_log,
