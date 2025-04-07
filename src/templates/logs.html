@@ -4,7 +4,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="card mt-3">
+<div class="card">
     <div class="card-header">
         <h4 class="card-title mb-0 d-flex align-items-center justify-content-center">
             سجلات
@@ -29,36 +29,6 @@
 
             <button type="submit" class="btn btn-primary ms-3">تطبيق</button>
         </form>
-        <div class="row">
-            <div class="col-md-12">
-                <table class="table table-striped table-hover table-bordered">
-                    <thead>
-                        <tr>
-                            <th>المعرف</th>
-                            <th>API</th>
-                            <th>بيانات الطلب</th>
-                            <th>حالة الطلب</th>
-                            <th>مدة الاستجابة</th>
-                            <th>الوقت</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for log in logs %}
-                        <tr>
-                            <td>{{ log.id }}</td>
-                            <td>{{ log.endpoint }}</td>
-                            <td>{{ log.request_data }}</td>
-                            <td>{{ log.response_status }}</td>
-                            <td>{{ log.response_time }}</td>
-                            <td>{{ log.timestamp }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <!-- Add this after the logs table -->
-
         <div class="row mt-4">
             <div class="col-12">
                 <!-- Pagination Navigation -->
@@ -113,6 +83,34 @@
             <div class="col-12 text-center text-muted">
                 <small>صفحة {{ page }} من {{ total_pages }}
                     ({{ start_log }} - {{ end_log }} من إجمالي {{ total_logs }} سجل)</small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-striped table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th>المعرف</th>
+                            <th>API</th>
+                            <th>بيانات الطلب</th>
+                            <th>حالة الطلب</th>
+                            <th>مدة الاستجابة</th>
+                            <th>الوقت</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td>{{ log.id }}</td>
+                            <td>{{ log.endpoint }}</td>
+                            <td>{{ log.request_data }}</td>
+                            <td>{{ log.response_status }}</td>
+                            <td>{{ log.response_time }}</td>
+                            <td>{{ log.timestamp }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
 
