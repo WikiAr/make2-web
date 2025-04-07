@@ -152,13 +152,18 @@ def get_titles():
 
 @app.route("/logs", methods=["GET"])
 def view_logs():
+    # ---
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 8, type=int)
-
+    order = request.args.get('order', 'DESC').upper()
+    # ---
     # Validate pagination parameters
     page = max(1, page)  # Ensure page is at least 1
     per_page = max(1, min(100, per_page))  # Ensure per_page is between 1 and 100
-
+    # ---
+    if order not in ['ASC', 'DESC']:
+        order = 'DESC'
+    # ---
     try:
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
@@ -170,8 +175,8 @@ def view_logs():
         offset = (page - 1) * per_page
 
         # Get paginated results
-        cursor.execute("SELECT * FROM logs ORDER BY timestamp DESC LIMIT ? OFFSET ?",
-                       (per_page, offset))
+        cursor.execute(f"SELECT * FROM logs ORDER BY timestamp {order} LIMIT ? OFFSET ?", (per_page, offset))
+
         logs = cursor.fetchall()
         conn.close()
     except sqlite3.Error as e:
@@ -195,12 +200,24 @@ def view_logs():
     # ---
     total_pages = (total_logs + per_page - 1) // per_page  # Ceiling division
     # ---
+    start_log = (page - 1) * per_page + 1
+    end_log = min(page * per_page, total_logs)
+    # ---
+    start_page = max(1, page - 2)
+    end_page = min(start_page + 4, total_pages)
+    start_page = max(1, end_page - 4)
+    # ---
     return render_template(
         "logs.html",
         logs=log_list,
         page=page, per_page=per_page,
         total_pages=total_pages,
-        total_logs=total_logs
+        total_logs=total_logs,
+        start_log=start_log,
+        end_log=end_log,
+        start_page=start_page,
+        end_page=end_page,
+        order=order
     )
 
 

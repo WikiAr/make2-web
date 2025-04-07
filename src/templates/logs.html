@@ -1,6 +1,6 @@
 {% extends "main.html" %}
 {% block title %}
-<title>Categories titles</title>
+<title>API LOGS</title>
 {% endblock %}
 
 {% block content %}
@@ -11,16 +11,25 @@
         </h4>
     </div>
     <div class="card-body">
-        <form method="get" action="{{ url_for('view_logs') }}" class="form-inline mb-3 d-flex justify-content-center">
-            <input type="hidden" name="page" value="{{ page }}">
-            <input type="hidden" name="per_page" value="{{ per_page }}">
+        <form method="get" action="{{ url_for('view_logs') }}"
+            class="form-inline mb-3 d-flex justify-content-center align-items-center gap-2">
 
-            <label for="order" class="me-2">ترتيب السجلات:</label>
-            <select name="order" id="order" class="form-select w-auto me-2" onchange="this.form.submit()">
+            <label for="per_page" class="me-2">عدد السجلات:</label>
+            <select name="per_page" id="per_page" class="form-select w-auto">
+                {% for n in [5, 10, 20, 50, 100] %}
+                <option value="{{ n }}" {% if per_page == n %}selected{% endif %}>{{ n }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="order" class="ms-3 me-2">ترتيب السجلات:</label>
+            <select name="order" id="order" class="form-select w-auto">
                 <option value="DESC" {% if order == 'DESC' %}selected{% endif %}>تنازلي (الأحدث أولاً)</option>
                 <option value="ASC" {% if order == 'ASC' %}selected{% endif %}>تصاعدي (الأقدم أولاً)</option>
             </select>
+
+            <button type="submit" class="btn btn-primary ms-3">تطبيق</button>
         </form>
+
 
         <div class="row">
             <div class="col-md-12">
@@ -56,14 +65,16 @@
                         <ul class="pagination justify-content-center">
                             <!-- First page -->
                             <li class="page-item {% if page == 1 %}disabled{% endif %}">
-                                <a class="page-link" href="{{ url_for('view_logs', page=1, per_page=per_page, order=order) }}"
+                                <a class="page-link"
+                                    href="{{ url_for('view_logs', page=1, per_page=per_page, order=order) }}"
                                     aria-label="First">
                                     <span aria-hidden="true">&laquo;&laquo;</span>
                                 </a>
                             </li>
                             <!-- Previous page -->
                             <li class="page-item {% if page == 1 %}disabled{% endif %}">
-                                <a class="page-link" href="{{ url_for('view_logs', page=page-1, per_page=per_page, order=order) }}"
+                                <a class="page-link"
+                                    href="{{ url_for('view_logs', page=page-1, per_page=per_page, order=order) }}"
                                     aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
@@ -78,7 +89,8 @@
 
                             <!-- Next page -->
                             <li class="page-item {% if page == total_pages %}disabled{% endif %}">
-                                <a class="page-link" href="{{ url_for('view_logs', page=page+1, per_page=per_page, order=order) }}"
+                                <a class="page-link"
+                                    href="{{ url_for('view_logs', page=page+1, per_page=per_page, order=order) }}"
                                     aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
