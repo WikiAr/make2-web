@@ -1,1 +1,1 @@
-python3 I:\core\bots\ma\web\src\app.py
+python3 I:\core\bots\ma\web\src\app.py debug
