@@ -159,20 +159,25 @@ def view_logs():
     page = max(1, page)  # Ensure page is at least 1
     per_page = max(1, min(100, per_page))  # Ensure per_page is between 1 and 100
 
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    # Get total count for pagination
-    cursor.execute("SELECT COUNT(*) FROM logs")
-    total_logs = cursor.fetchone()[0]
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        # Get total count for pagination
+        cursor.execute("SELECT COUNT(*) FROM logs")
+        total_logs = cursor.fetchone()[0]
 
-    # Calculate offset
-    offset = (page - 1) * per_page
+        # Calculate offset
+        offset = (page - 1) * per_page
 
-    # Get paginated results
-    cursor.execute("SELECT * FROM logs ORDER BY timestamp DESC LIMIT ? OFFSET ?",
-                   (per_page, offset))
-    logs = cursor.fetchall()
-    conn.close()
+        # Get paginated results
+        cursor.execute("SELECT * FROM logs ORDER BY timestamp DESC LIMIT ? OFFSET ?",
+                       (per_page, offset))
+        logs = cursor.fetchall()
+        conn.close()
+    except sqlite3.Error as e:
+        print(f"Database error in view_logs: {e}")
+        logs = []
+        total_logs = 0
 
     # print(f"{page=}, {per_page=}")
 
