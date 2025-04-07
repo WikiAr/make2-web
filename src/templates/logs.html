@@ -64,10 +64,10 @@
                             {% set start_page = [end_page - 4, 1]|max %}
 
                             {% for p in range(start_page, end_page + 1) %}
-                                <li class="page-item {% if p == page %}active{% endif %}">
-                                    <a class="page-link"
-                                        href="{{ url_for('view_logs', page=p, per_page=per_page) }}">{{ p }}</a>
-                                </li>
+                            <li class="page-item {% if p == page %}active{% endif %}">
+                                <a class="page-link"
+                                    href="{{ url_for('view_logs', page=p, per_page=per_page) }}">{{ p }}</a>
+                            </li>
                             {% endfor %}
 
                             <!-- Next page -->
@@ -91,7 +91,9 @@
 
                 <!-- Page info -->
                 <div class="col-12 text-center text-muted">
-                    <small>صفحة {{ page }} من {{ total_pages }}</small>
+                    <small>صفحة {{ page }} من {{ total_pages }}
+                        ({{ '%d' % ((page - 1) * per_page + 1) }}-{{ '%d' % min(page * per_page, total_logs) }} من
+                        إجمالي {{ total_logs }} سجل)</small>
                 </div>
             </div>
         </div>
