@@ -246,7 +246,6 @@ def internal_server_error(e):
 if __name__ == "__main__":
     init_db()
     # ---
-    debug = True
-    # debug = False
+    debug = "debug" in sys.argv
     # ---
     app.run(debug=debug)
