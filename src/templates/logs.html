@@ -16,7 +16,7 @@
 
             <label for="per_page" class="me-2">عدد السجلات:</label>
             <select name="per_page" id="per_page" class="form-select w-auto">
-                {% for n in [5, 10, 20, 50, 100] %}
+                {% for n in [10, 20, 50, 100, 150, 200] %}
                 <option value="{{ n }}" {% if per_page == n %}selected{% endif %}>{{ n }}</option>
                 {% endfor %}
             </select>

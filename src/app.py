@@ -154,15 +154,15 @@ def get_titles():
 def view_logs():
     # ---
     page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 8, type=int)
-    order = request.args.get('order', 'DESC').upper()
+    per_page = request.args.get('per_page', 10, type=int)
+    order = request.args.get('order', 'asc').upper()
     # ---
     # Validate pagination parameters
     page = max(1, page)  # Ensure page is at least 1
     per_page = max(1, min(100, per_page))  # Ensure per_page is between 1 and 100
     # ---
     if order not in ['ASC', 'DESC']:
-        order = 'DESC'
+        order = 'ASC'
     # ---
     try:
         conn = sqlite3.connect(db_path)
