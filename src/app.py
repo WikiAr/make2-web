@@ -186,9 +186,13 @@ def view_logs():
     # ---
     total_pages = (total_logs + per_page - 1) // per_page  # Ceiling division
     # ---
-    return render_template("logs.html", logs=log_list,
-                           page=page, per_page=per_page,
-                           total_pages=total_pages)
+    return render_template(
+        "logs.html",
+        logs=log_list,
+        page=page, per_page=per_page,
+        total_pages=total_pages,
+        total_logs=total_logs
+    )
 
 
 @app.route("/", methods=["GET"])
