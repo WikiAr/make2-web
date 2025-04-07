@@ -9,7 +9,12 @@ async function sendCategories() {
     loading.style.display = 'inline-block';
     notloading.style.display = 'none';
     resultBox.textContent = '';
-
+    // ---
+    $("#with_labs").hide();
+    $("#no_labs").hide();
+    $("#time").hide();
+    $("#duplicates").hide();
+    // ---
     try {
         const titles_list = titles.split('\n').filter(t => t.trim() !== "");
         // ---
@@ -27,14 +32,22 @@ async function sendCategories() {
         // ---
         const with_labs = data.with_labs;
         const no_labs = data.no_labs;
-        // ---
-        $("#with_labs").text("بتسميات: " + with_labs);
-        $("#no_labs").text("بدون تسميات: " + no_labs);
+        const duplicates = data.duplicates;
         // ---
         var timeend = new Date().getTime();
         var time = (timeend - timestart) / 1000;
         // ---
-        $("#time").text("(" + time.toFixed(2) + " ثانية)");
+        $("#duplicates").text(duplicates);
+        $("#duplicates").show();
+        // ---
+        $("#with_labs").text(with_labs);
+        $("#with_labs").show();
+        // ---
+        $("#no_labs").text(no_labs);
+        $("#no_labs").show();
+        // ---
+        $("#time").text(time.toFixed(2) + " ثانية");
+        $("#time").show();
         // ---
         resultBox.textContent = JSON.stringify(data.results, null, 2);
         // ---

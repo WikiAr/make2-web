@@ -113,7 +113,11 @@ def get_titles():
     start_time = time.time()
     data = request.get_json()
     titles = data.get("titles", [])
-
+    # ---
+    len_titles = len(titles)
+    titles = list(set(titles))
+    duplicates = len_titles - len(titles)
+    # ---
     # تأكد أن البيانات قائمة
     if not isinstance(titles, list):
         log_request("/api/list", data, "error", time.time() - start_time)
@@ -140,6 +144,7 @@ def get_titles():
         "results" : json_result,
         "no_labs": len(no_labs),
         "with_labs": len_result,
+        "duplicates": duplicates,
         "time": delta
     }
     # ---
@@ -148,6 +153,7 @@ def get_titles():
     log_request("/api/list", data, response_status, delta)
     # ---
     return jsonify(response_data)
+
 
 @app.route("/logs", methods=["GET"])
 def view_logs():
@@ -162,21 +168,21 @@ def view_logs():
     if order not in ['ASC', 'DESC']:
         order = 'ASC'
 
+    # Offset for pagination
+    offset = (page - 1) * per_page
+
     try:
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
 
-        # Total logs count
-        cursor.execute("SELECT COUNT(*) FROM logs")
-        total_logs = cursor.fetchone()[0]
+            # Total logs count
+            cursor.execute("SELECT COUNT(*) FROM logs")
+            total_logs = cursor.fetchone()[0]
 
-        # Offset for pagination
-        offset = (page - 1) * per_page
+            # Fetch logs with ordering
+            cursor.execute(f"SELECT * FROM logs ORDER BY timestamp {order} LIMIT ? OFFSET ?", (per_page, offset))
+            logs = cursor.fetchall()
 
-        # Fetch logs with ordering
-        cursor.execute(f"SELECT * FROM logs ORDER BY timestamp {order} LIMIT ? OFFSET ?", (per_page, offset))
-        logs = cursor.fetchall()
-        conn.close()
     except sqlite3.Error as e:
         print(f"Database error in view_logs: {e}")
         logs = []
