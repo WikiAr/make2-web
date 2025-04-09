@@ -26,7 +26,13 @@ except:
 app = Flask(__name__)
 # CORS(app)  # ← لتفعيل CORS
 
-db_path = path2 / "new_logs.db"
+HOME = os.getenv("HOME")
+
+if HOME:
+    db_path = HOME + "/www/python/bots/new_logs.db"
+else:
+    db_path = path2 / "new_logs.db"
+
 db_path = str(db_path)
 
 
