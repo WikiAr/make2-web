@@ -2,6 +2,7 @@
 import os
 import sys
 import sqlite3
+import json
 from pathlib import Path
 
 HOME = os.getenv("HOME")
@@ -57,25 +58,29 @@ def init_db():
 
 
 def fetch_all(query, params=(), fetch_one=False):
-    # ---
     try:
         with sqlite3.connect(db_path) as conn:
+            # Set row factory to return rows as dictionaries
+            conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
 
-            # Fetch logs with ordering
+            # Execute the query
             cursor.execute(query, params)
-            # ---
+
+            # Fetch results
             if fetch_one:
-                logs = cursor.fetchone()
+                row = cursor.fetchone()
+                logs = dict(row) if row else None  # Convert to dictionary
             else:
-                logs = cursor.fetchall()
+                rows = cursor.fetchall()
+                logs = [dict(row) for row in rows]  # Convert all rows to dictionaries
 
     except sqlite3.Error as e:
         print(f"Database error in view_logs: {e}")
         if "no such table: logs" in str(e):
             init_db()
         logs = []
-    # ---
+
     return logs
 
 
@@ -121,7 +126,7 @@ def count_all():
     # ---
     result = fetch_all("SELECT COUNT(*) FROM logs", (), fetch_one=True)
     # ---
-    total_logs = result[0]
+    total_logs = result['COUNT(*)']
     # ---
     return total_logs
 
@@ -132,6 +137,8 @@ def get_logs(per_page=10, offset=0, order='ASC'):
         order = 'ASC'
     # ---
     query = f"SELECT * FROM logs ORDER BY timestamp {order} LIMIT ? OFFSET ?"
+    # ---
+    # {'id': 1, 'endpoint': 'api', 'request_data': 'Category:1934-35 in Bulgarian football', 'response_status': 'true', 'response_time': 123123.0, 'response_count': 6, 'timestamp': '2025-04-10 01:08:58'}
     # ---
     logs = fetch_all(query, (per_page, offset))
     # ---

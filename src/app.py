@@ -124,14 +124,16 @@ def view_logs():
     # Convert to list of dicts
     log_list = []
     for log in logs:
+        # {'id': 1, 'endpoint': 'api', 'request_data': 'Category:1934-35 in Bulgarian football', 'response_status': 'true', 'response_time': 123123.0, 'response_count': 6, 'timestamp': '2025-04-10 01:08:58'}
+        # ---
         log_list.append({
-            "id": log[0],
-            "endpoint": log[1],
-            "request_data": log[2],
-            "response_status": log[3],
-            "response_time": log[4],
-            "timestamp": log[5],
-            "response_count": log[6],
+            "id": log["id"],
+            "endpoint": log["endpoint"],
+            "request_data": log["request_data"],
+            "response_status": log["response_status"],
+            "response_time": log["response_time"],
+            "timestamp": log["timestamp"],
+            "response_count": log["response_count"],
         })
     # ---
     # Pagination calculations
