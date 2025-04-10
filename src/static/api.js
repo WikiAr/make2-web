@@ -33,6 +33,11 @@ $(document).ready(function () {
             dataType: "json",
             success: function (data) {
                 // ---
+                if (data.error) {
+                    console.error(data.error);
+                    return;
+                }
+                // ---
                 if (data.result == "") {
                     $resultInput.attr("placeholder", "لا يوجد نتيجة");
                     $resultInput.addClass("alert-danger");

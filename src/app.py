@@ -5,18 +5,26 @@ import time
 import sqlite3
 
 from flask import Flask, jsonify, render_template, request
-from flask_cors import CORS
+# from flask_cors import CORS
 from pathlib import Path
 
 sys.argv.append("noprint")
 path1 = "i:/core/bots/ma"
 
-path2 = Path(__file__).parent.parent / "bots"  # $HOME/www/python/bots
+HOME = os.getenv("HOME")
 
-if Path(path1).exists():
-    sys.path.append(path1)
-else:
+if HOME:
+    path2 = HOME + "/www/python/bots"
+    # ---
     sys.path.append(str(path2))
+    # ---
+    db_path = HOME + "/www/python/bots/new_logs.db"
+else:
+    sys.path.append(path1)
+    # ---
+    db_path = Path(__file__).parent.parent / "bots" / "new_logs.db"
+
+db_path = str(db_path)
 
 try:
     from make2 import event
@@ -25,15 +33,6 @@ except:
 
 app = Flask(__name__)
 # CORS(app)  # ← لتفعيل CORS
-
-HOME = os.getenv("HOME")
-
-if HOME:
-    db_path = HOME + "/www/python/bots/new_logs.db"
-else:
-    db_path = path2 / "new_logs.db"
-
-db_path = str(db_path)
 
 
 def init_db():
