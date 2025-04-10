@@ -109,6 +109,7 @@ def view_logs():
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 10, type=int)
     order = request.args.get('order', 'asc').upper()
+    order_by = request.args.get('order_by', 'timestamp')
 
     # Validate values
     page = max(1, page)
@@ -117,7 +118,20 @@ def view_logs():
     # Offset for pagination
     offset = (page - 1) * per_page
     # ---
-    logs = logs_db.get_logs(per_page, offset, order)
+    order_by_types = [
+        "id",
+        "endpoint",
+        "request_data",
+        "response_status",
+        "response_time",
+        "response_count",
+        "timestamp",
+    ]
+    # ---
+    if order_by not in order_by_types:
+        order_by = "timestamp"
+    # ---
+    logs = logs_db.get_logs(per_page, offset, order, order_by=order_by)
     # ---
     total_logs = logs_db.count_all()
     # ---
@@ -147,7 +161,9 @@ def view_logs():
     return render_template(
         "logs.html",
         logs=log_list,
+        order_by_types=order_by_types,
         page=page,
+        order_by=order_by,
         per_page=per_page,
         total_pages=total_pages,
         total_logs=total_logs,
