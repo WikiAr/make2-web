@@ -30,6 +30,11 @@ async function sendCategories() {
         const data = await response.json();
         // const time = data.time;
         // ---
+        if (data.error) {
+            console.error(data.error);
+            return;
+        }
+        // ---
         const with_labs = data.with_labs;
         const no_labs = data.no_labs;
         const duplicates = data.duplicates;
