@@ -34,7 +34,7 @@ def get_title(title) -> str:
     start_time = time.time()
     # ---
     if event is None:
-        logs_db.log_request("/api/<title>", {"title": title}, "error", time.time() - start_time)
+        logs_db.log_request("/api/<title>", [title], "error", time.time() - start_time)
         return jsonify({"error": "حدث خطأ أثناء تحميل المكتبة"})
     # ---
     json_result = event([title], tst_prnt_all=False) or {"result": ""}
@@ -49,7 +49,7 @@ def get_title(title) -> str:
     # ---
     # تحديد حالة الاستجابة
     response_status = "success" if data.get("result") else "no_result"
-    logs_db.log_request("/api/<title>", {"title": title}, response_status, delta)
+    logs_db.log_request("/api/<title>", [title], response_status, delta)
     # ---
     # data["time"] = delta
     # ---
@@ -68,14 +68,14 @@ def get_titles():
     # ---
     # تأكد أن البيانات قائمة
     if not isinstance(titles, list):
-        logs_db.log_request("/api/list", data, "error", time.time() - start_time)
+        logs_db.log_request("/api/list", titles, "error", time.time() - start_time)
         return jsonify({"error": "بيانات غير صالحة"}), 400
 
     # print("get_titles:")
     # print(titles)
 
     if event is None:
-        logs_db.log_request("/api/list", data, "error", time.time() - start_time)
+        logs_db.log_request("/api/list", titles, "error", time.time() - start_time)
         return jsonify({"error": "حدث خطأ أثناء تحميل المكتبة"})
     # ---
     json_result, no_labs = event(titles, return_no_labs=True, tst_prnt_all=False) or {}
@@ -98,7 +98,7 @@ def get_titles():
     # ---
     # تحديد حالة الاستجابة
     response_status = "success" if len_result > 0 else "no_result"
-    logs_db.log_request("/api/list", data, response_status, delta)
+    logs_db.log_request("/api/list", titles, response_status, delta)
     # ---
     return jsonify(response_data)
 
