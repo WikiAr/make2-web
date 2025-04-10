@@ -24,18 +24,24 @@ except:
     event = None
 
 app = Flask(__name__)
-CORS(app)  # ← لتفعيل CORS
+# CORS(app)  # ← لتفعيل CORS
 
-db_path = Path(__file__).parent / "logs.db"
+HOME = os.getenv("HOME")
+
+if HOME:
+    db_path = HOME + "/www/python/bots/new_logs.db"
+else:
+    db_path = path2 / "new_logs.db"
+
 db_path = str(db_path)
 
 
 def init_db():
     try:
-        # Use an absolute path or config variable
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-        cursor.execute("""
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+
+            cursor.execute("""
             CREATE TABLE IF NOT EXISTS logs (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 endpoint TEXT NOT NULL,
@@ -43,12 +49,11 @@ def init_db():
                 response_status TEXT NOT NULL,
                 response_time REAL,
                 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
+            )""")
         conn.commit()
-        conn.close()
+
     except sqlite3.Error as e:
-        print(f"Database error: {e}")
+        print(f"init_db Database error: {e}")
 
 
 def log_request_old(endpoint, request_data, response_status, response_time):
@@ -66,16 +71,21 @@ def log_request_old(endpoint, request_data, response_status, response_time):
 def log_request(endpoint, request_data, response_status, response_time):
     response_time = round(response_time, 3)
     try:
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-        cursor.execute("""
-            INSERT INTO logs (endpoint, request_data, response_status, response_time)
-            VALUES (?, ?, ?, ?)
-        """, (endpoint, str(request_data), response_status, response_time))
-        conn.commit()
-        conn.close()
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                INSERT INTO logs (endpoint, request_data, response_status, response_time)
+                VALUES (?, ?, ?, ?)
+            """, (endpoint, str(request_data), response_status, response_time))
+
+            conn.commit()
+
     except sqlite3.Error as e:
         print(f"Error logging request: {e}")
+        if "no such table: logs" in str(e):
+            init_db()
+            # log_request(endpoint, request_data, response_status, response_time)
     except Exception as e:
         print(f"Unexpected error in log_request: {e}")
 
@@ -185,6 +195,8 @@ def view_logs():
 
     except sqlite3.Error as e:
         print(f"Database error in view_logs: {e}")
+        if "no such table: logs" in str(e):
+            init_db()
         logs = []
         total_logs = 0
 
