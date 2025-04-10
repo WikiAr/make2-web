@@ -88,6 +88,8 @@ def log_request(endpoint, request_data, response_status, response_time):
     # ---
     response_time = round(response_time, 3)
     # ---
+    response_status = str(response_status)
+    # ---
     result = db_commit("""
         INSERT INTO logs (endpoint, request_data, response_status, response_time)
         VALUES (?, ?, ?, ?)

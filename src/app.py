@@ -34,7 +34,7 @@ def get_title(title) -> str:
     start_time = time.time()
     # ---
     if event is None:
-        logs_db.log_request("/api/<title>", [title], "error", time.time() - start_time)
+        logs_db.log_request("/api/<title>", title, "error", time.time() - start_time)
         return jsonify({"error": "حدث خطأ أثناء تحميل المكتبة"})
     # ---
     json_result = event([title], tst_prnt_all=False) or {"result": ""}
@@ -48,8 +48,8 @@ def get_title(title) -> str:
     delta = time.time() - start_time
     # ---
     # تحديد حالة الاستجابة
-    response_status = "success" if data.get("result") else "no_result"
-    logs_db.log_request("/api/<title>", [title], response_status, delta)
+    response_status = data.get("result") if data.get("result") else "no_result"
+    logs_db.log_request("/api/<title>", title, response_status, delta)
     # ---
     # data["time"] = delta
     # ---
