@@ -83,7 +83,7 @@ def log_request(endpoint, request_data, response_status, response_time):
 
     except sqlite3.Error as e:
         print(f"Error logging request: {e}")
-        if e == "no such table: logs":
+        if "no such table: logs" in str(e):
             init_db()
             # log_request(endpoint, request_data, response_status, response_time)
     except Exception as e:
@@ -195,7 +195,7 @@ def view_logs():
 
     except sqlite3.Error as e:
         print(f"Database error in view_logs: {e}")
-        if e == "no such table: logs":
+        if "no such table: logs" in str(e):
             init_db()
         logs = []
         total_logs = 0
