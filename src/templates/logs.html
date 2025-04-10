@@ -14,22 +14,40 @@
         </div>
         <div class="card-body">
             <!-- Filter Form -->
-            <form method="get" action="{{ url_for('view_logs') }}"
-                class="form-inline mb-3 d-flex justify-content-center align-items-center gap-2">
-                <label for="per_page" class="me-2">عدد السجلات:</label>
-                <select name="per_page" id="per_page" class="form-select w-auto">
-                    {% for n in [10, 20, 50, 100, 150, 200] %}
-                    <option value="{{ n }}" {% if per_page == n %}selected{% endif %}>{{ n }}</option>
-                    {% endfor %}
-                </select>
+            <form method="get" action="{{ url_for('view_logs') }}" class="form-inline mb-3 gap-2">
+                <!-- d-flex justify-content-center align-items-center -->
+                <div class="row">
+                    <div class="col-md-2">
+                        <label for="per_page" class="me-2">عدد السجلات:</label>
+                        <select name="per_page" id="per_page" class="form-select w-auto">
+                            {% for n in [10, 20, 50, 100, 150, 200] %}
+                            <option value="{{ n }}" {% if per_page == n %}selected{% endif %}>{{ n }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="order_by" class="me-2">ترتيب حسب:</label>
+                        <select name="order_by" id="order_by" class="form-select w-auto">
+                            {% for order_type in order_by_types %}
+                            <option value="{{ order_type }}" {% if order_by == order_type %}selected{% endif %}>
+                                {{ order_type }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="order" class="ms-3 me-2">ترتيب السجلات:</label>
+                        <select name="order" id="order" class="form-select w-auto">
+                            <option value="DESC" {% if order == 'DESC' %}selected{% endif %}>تنازلي (الأحدث أولاً)
+                            </option>
+                            <option value="ASC" {% if order == 'ASC' %}selected{% endif %}>تصاعدي (الأقدم أولاً)
+                            </option>
+                        </select>
 
-                <label for="order" class="ms-3 me-2">ترتيب السجلات:</label>
-                <select name="order" id="order" class="form-select w-auto">
-                    <option value="DESC" {% if order == 'DESC' %}selected{% endif %}>تنازلي (الأحدث أولاً)</option>
-                    <option value="ASC" {% if order == 'ASC' %}selected{% endif %}>تصاعدي (الأقدم أولاً)</option>
-                </select>
-
-                <button type="button" class="btn btn-primary ms-3" onclick="applySettings()">تطبيق</button>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary ms-3" type="submit" onclick1="applySettings()">تطبيق</button>
+                    </div>
+                </div>
             </form>
             <div class="row mt-4">
                 <div class="col-12">
@@ -121,6 +139,7 @@
         </div>
     </div>
 </div>
+<!--
 <script>
     const perPageSelect = document.getElementById('per_page');
     const orderSelect = document.getElementById('order');
@@ -158,5 +177,6 @@
         window.location.href = url.toString();
     }
 </script>
+-->
 
 {% endblock %}

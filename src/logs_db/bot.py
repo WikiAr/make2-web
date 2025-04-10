@@ -133,12 +133,12 @@ def count_all():
     return total_logs
 
 
-def get_logs(per_page=10, offset=0, order='ASC'):
+def get_logs(per_page=10, offset=0, order='ASC', order_by="timestamp"):
     # ---
     if order not in ['ASC', 'DESC']:
         order = 'ASC'
     # ---
-    query = f"SELECT * FROM logs ORDER BY timestamp {order} LIMIT ? OFFSET ?"
+    query = f"SELECT * FROM logs ORDER BY {order_by} {order} LIMIT ? OFFSET ?"
     # ---
     # {'id': 1, 'endpoint': 'api', 'request_data': 'Category:1934-35 in Bulgarian football', 'response_status': 'true', 'response_time': 123123.0, 'response_count': 6, 'timestamp': '2025-04-10 01:08:58'}
     # ---
