@@ -97,7 +97,7 @@ def get_titles():
     }
     # ---
     # تحديد حالة الاستجابة
-    response_status = json_result if len_result > 0 else "no_result"
+    response_status = "success" if len_result > 0 else "no_result"
     logs_db.log_request("/api/list", titles, response_status, delta)
     # ---
     return jsonify(response_data)
