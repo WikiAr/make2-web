@@ -2,30 +2,23 @@
 import os
 import sys
 import time
-import sqlite3
-
 from flask import Flask, jsonify, render_template, request
 # from flask_cors import CORS
-from pathlib import Path
+
+import logs_db
 
 sys.argv.append("noprint")
+
 path1 = "i:/core/bots/ma"
 
 HOME = os.getenv("HOME")
 
 if HOME:
     path2 = HOME + "/www/python/bots"
-    # ---
     sys.path.append(str(path2))
-    # ---
-    db_path = HOME + "/www/python/bots/new_logs.db"
 else:
     sys.path.append(path1)
-    # ---
-    db_path = Path(__file__).parent.parent / "bots" / "new_logs.db"
-
-db_path = str(db_path)
-
+# ---
 try:
     from make2 import event
 except:
@@ -35,67 +28,13 @@ app = Flask(__name__)
 # CORS(app)  # ← لتفعيل CORS
 
 
-def init_db():
-    try:
-        with sqlite3.connect(db_path) as conn:
-            cursor = conn.cursor()
-
-            cursor.execute("""
-            CREATE TABLE IF NOT EXISTS logs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                endpoint TEXT NOT NULL,
-                request_data TEXT,
-                response_status TEXT NOT NULL,
-                response_time REAL,
-                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-            )""")
-        conn.commit()
-
-    except sqlite3.Error as e:
-        print(f"init_db Database error: {e}")
-
-
-def log_request_old(endpoint, request_data, response_status, response_time):
-    response_time = round(response_time, 3)
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute("""
-        INSERT INTO logs (endpoint, request_data, response_status, response_time)
-        VALUES (?, ?, ?, ?)
-    """, (endpoint, str(request_data), response_status, response_time))
-    conn.commit()
-    conn.close()
-
-
-def log_request(endpoint, request_data, response_status, response_time):
-    response_time = round(response_time, 3)
-    try:
-        with sqlite3.connect(db_path) as conn:
-            cursor = conn.cursor()
-
-            cursor.execute("""
-                INSERT INTO logs (endpoint, request_data, response_status, response_time)
-                VALUES (?, ?, ?, ?)
-            """, (endpoint, str(request_data), response_status, response_time))
-
-            conn.commit()
-
-    except sqlite3.Error as e:
-        print(f"Error logging request: {e}")
-        if "no such table: logs" in str(e):
-            init_db()
-            # log_request(endpoint, request_data, response_status, response_time)
-    except Exception as e:
-        print(f"Unexpected error in log_request: {e}")
-
-
 @app.route("/api/<title>", methods=["GET"])
 def get_title(title) -> str:
     # ---
     start_time = time.time()
     # ---
     if event is None:
-        log_request("/api/<title>", {"title": title}, "error", time.time() - start_time)
+        logs_db.log_request("/api/<title>", {"title": title}, "error", time.time() - start_time)
         return jsonify({"error": "حدث خطأ أثناء تحميل المكتبة"})
     # ---
     json_result = event([title], tst_prnt_all=False) or {"result": ""}
@@ -110,7 +49,7 @@ def get_title(title) -> str:
     # ---
     # تحديد حالة الاستجابة
     response_status = "success" if data.get("result") else "no_result"
-    log_request("/api/<title>", {"title": title}, response_status, delta)
+    logs_db.log_request("/api/<title>", {"title": title}, response_status, delta)
     # ---
     # data["time"] = delta
     # ---
@@ -129,14 +68,14 @@ def get_titles():
     # ---
     # تأكد أن البيانات قائمة
     if not isinstance(titles, list):
-        log_request("/api/list", data, "error", time.time() - start_time)
+        logs_db.log_request("/api/list", data, "error", time.time() - start_time)
         return jsonify({"error": "بيانات غير صالحة"}), 400
 
     # print("get_titles:")
     # print(titles)
 
     if event is None:
-        log_request("/api/list", data, "error", time.time() - start_time)
+        logs_db.log_request("/api/list", data, "error", time.time() - start_time)
         return jsonify({"error": "حدث خطأ أثناء تحميل المكتبة"})
     # ---
     json_result, no_labs = event(titles, return_no_labs=True, tst_prnt_all=False) or {}
@@ -159,7 +98,7 @@ def get_titles():
     # ---
     # تحديد حالة الاستجابة
     response_status = "success" if len_result > 0 else "no_result"
-    log_request("/api/list", data, response_status, delta)
+    logs_db.log_request("/api/list", data, response_status, delta)
     # ---
     return jsonify(response_data)
 
@@ -174,31 +113,14 @@ def view_logs():
     # Validate values
     page = max(1, page)
     per_page = max(1, min(100, per_page))
-    if order not in ['ASC', 'DESC']:
-        order = 'ASC'
 
     # Offset for pagination
     offset = (page - 1) * per_page
-
-    try:
-        with sqlite3.connect(db_path) as conn:
-            cursor = conn.cursor()
-
-            # Total logs count
-            cursor.execute("SELECT COUNT(*) FROM logs")
-            total_logs = cursor.fetchone()[0]
-
-            # Fetch logs with ordering
-            cursor.execute(f"SELECT * FROM logs ORDER BY timestamp {order} LIMIT ? OFFSET ?", (per_page, offset))
-            logs = cursor.fetchall()
-
-    except sqlite3.Error as e:
-        print(f"Database error in view_logs: {e}")
-        if "no such table: logs" in str(e):
-            init_db()
-        logs = []
-        total_logs = 0
-
+    # ---
+    logs = logs_db.get_logs(per_page, offset, order)
+    # ---
+    total_logs = logs_db.count_all()
+    # ---
     # Convert to list of dicts
     log_list = []
     for log in logs:
@@ -208,9 +130,10 @@ def view_logs():
             "request_data": log[2],
             "response_status": log[3],
             "response_time": log[4],
-            "timestamp": log[5]
+            "timestamp": log[5],
+            "response_count": log[6],
         })
-
+    # ---
     # Pagination calculations
     total_pages = (total_logs + per_page - 1) // per_page
     start_log = (page - 1) * per_page + 1
@@ -218,7 +141,7 @@ def view_logs():
     start_page = max(1, page - 2)
     end_page = min(start_page + 4, total_pages)
     start_page = max(1, end_page - 4)
-
+    # ---
     return render_template(
         "logs.html",
         logs=log_list,
@@ -255,7 +178,7 @@ def internal_server_error(e):
 
 
 if __name__ == "__main__":
-    init_db()
+    logs_db.init_db()
     # ---
     debug = "debug" in sys.argv
     # ---
