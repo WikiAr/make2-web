@@ -30,6 +30,9 @@ app = Flask(__name__)
 
 @app.route("/api/<title>", methods=["GET"])
 def get_title(title) -> str:
+    # Check for User-Agent header
+    if not request.headers.get('User-Agent'):
+        return jsonify({"error": "User-Agent header is required"}), 400
     # ---
     start_time = time.time()
     # ---
@@ -58,6 +61,10 @@ def get_title(title) -> str:
 
 @app.route("/api/list", methods=["POST"])
 def get_titles():
+    # Check for User-Agent header
+    if not request.headers.get('User-Agent'):
+        return jsonify({"error": "User-Agent header is required"}), 400
+    # ---
     start_time = time.time()
     data = request.get_json()
     titles = data.get("titles", [])
