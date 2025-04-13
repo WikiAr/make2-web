@@ -64,15 +64,16 @@
                             <li class="page-item {% if tab.page == 1 %}disabled{% endif %}">
                                 <a class="page-link"
                                     href="{{ url_for('view_logs', page=1, per_page=tab.per_page, order=tab.order, table_name=tab.table_name, status=tab.status) }}"
-                                    aria-label="First">
+                                    aria-label="First Page">
                                     <span aria-hidden="true">&laquo;&laquo;</span>
                                 </a>
                             </li>
+
                             <!-- Previous page -->
                             <li class="page-item {% if tab.page == 1 %}disabled{% endif %}">
                                 <a class="page-link"
                                     href="{{ url_for('view_logs', page=tab.page-1, per_page=tab.per_page, order=tab.order, table_name=tab.table_name, status=tab.status) }}"
-                                    aria-label="Previous">
+                                    aria-label="Previous Page">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
@@ -81,23 +82,26 @@
                             {% for p in range(tab.start_page, tab.end_page + 1) %}
                             <li class="page-item {% if p == tab.page %}active{% endif %}">
                                 <a class="page-link"
-                                    href="{{ url_for('view_logs', page=p, per_page=tab.per_page, order=tab.order, table_name=tab.table_name, status=tab.status) }}">{{ p }}</a>
+                                    href="{{ url_for('view_logs', page=p, per_page=tab.per_page, order=tab.order, table_name=tab.table_name, status=tab.status) }}">
+                                    {{ p }}
+                                </a>
                             </li>
                             {% endfor %}
 
-                            <!-- Next -->
+                            <!-- Next page -->
                             <li class="page-item {% if tab.page == tab.total_pages %}disabled{% endif %}">
                                 <a class="page-link"
                                     href="{{ url_for('view_logs', page=tab.page+1, per_page=tab.per_page, order=tab.order, table_name=tab.table_name, status=tab.status) }}"
-                                    aria-label="Next">
+                                    aria-label="Next Page">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>
-                            <!-- Last -->
+
+                            <!-- Last page -->
                             <li class="page-item {% if tab.page == tab.total_pages %}disabled{% endif %}">
                                 <a class="page-link"
                                     href="{{ url_for('view_logs', page=tab.total_pages, per_page=tab.per_page, order=tab.order, table_name=tab.table_name, status=tab.status) }}"
-                                    aria-label="Last">
+                                    aria-label="Last Page">
                                     <span aria-hidden="true">&raquo;&raquo;</span>
                                 </a>
                             </li>
