@@ -128,6 +128,17 @@ def log_request(endpoint, request_data, response_status, response_time):
     return result
 
 
+def sum_response_count(table_name="logs"):
+    # ---
+    query = f"select sum(response_count) as count_all from {table_name}"
+    # ---
+    result = fetch_all(query, (), fetch_one=True)
+    # ---
+    result = result["count_all"]
+    # ---
+    return result
+
+
 def get_response_status(table_name="logs"):
     # ---
     query = f"select response_status, count(response_status) as numbers from {table_name} group by response_status having count(*) > 2"
@@ -150,8 +161,6 @@ def count_all(status="", table_name="logs"):
         params = (status,)
     # ---
     result = fetch_all(query, params, fetch_one=True)
-    # ---
-    print(result)
     # ---
     if not result:
         return 0

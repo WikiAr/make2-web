@@ -75,10 +75,13 @@ def view_logs(request):
     end_page = min(start_page + 4, total_pages)
     start_page = max(1, end_page - 4)
     # ---
+    count_all = logs_db.sum_response_count(table_name=table_name)
+    # ---
     table_new = {
+        "count_all": count_all,
         "table_name": table_name,
         "total_pages": total_pages,
-        "total_logs": total_logs,
+        "total_logs": f"{total_logs:,}",
         "start_log": start_log,
         "end_log": end_log,
         "start_page": start_page,
