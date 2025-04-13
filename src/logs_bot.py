@@ -41,7 +41,7 @@ def view_logs(request):
     # [{'response_status': 'no_result', 'numbers': 10066}, {'response_status': 'success', 'numbers': 12}
     status_table = logs_db.get_response_status(table_name=table_name)
     # ---
-    status = status if status in status_table else ""
+    status = status if (status in status_table or status == "Category") else ""
     # ---
     logs = logs_db.get_logs(per_page, offset, order, order_by=order_by, status=status, table_name=table_name)
     # ---
@@ -75,7 +75,10 @@ def view_logs(request):
     end_page = min(start_page + 4, total_pages)
     start_page = max(1, end_page - 4)
     # ---
-    sum_all = logs_db.sum_response_count(table_name=table_name)
+    sum_all = logs_db.sum_response_count(status=status, table_name=table_name)
+    # ---
+    if status == "":
+        status = "All"
     # ---
     table_new = {
         "sum_all": f"{sum_all:,}",
@@ -93,9 +96,11 @@ def view_logs(request):
         "status": status,
     }
     # ---
-    # Ensure "All" option is available even if no statuses were retrieved
     if "All" not in status_table:
         status_table.append("All")
+    # ---
+    if "Category" not in status_table:
+        status_table.append("Category")
     # ---
     result = {
         "logs": log_list,
