@@ -30,8 +30,11 @@ app = Flask(__name__)
 
 @app.route("/api/<title>", methods=["GET"])
 def get_title(title) -> str:
+    # ---
     # Check for User-Agent header
     if not request.headers.get('User-Agent'):
+        response_status = "User-Agent missong"
+        logs_db.log_request("/api/<title>", title, response_status, delta)
         return jsonify({"error": "User-Agent header is required"}), 400
     # ---
     start_time = time.time()
@@ -63,6 +66,8 @@ def get_title(title) -> str:
 def get_titles():
     # Check for User-Agent header
     if not request.headers.get('User-Agent'):
+        response_status = "User-Agent missong"
+        logs_db.log_request("/api/<title>", title, response_status, delta)
         return jsonify({"error": "User-Agent header is required"}), 400
     # ---
     start_time = time.time()
