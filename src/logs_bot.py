@@ -90,7 +90,9 @@ def view_logs(request):
         "status": status,
     }
     # ---
-    status_table.append("All")
+    # Ensure "All" option is available even if no statuses were retrieved
+    if "All" not in status_table:
+        status_table.append("All")
     # ---
     result = {
         "logs": log_list,

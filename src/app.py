@@ -37,7 +37,7 @@ def get_title(title) -> str:
     # ---
     # Check for User-Agent header
     if not request.headers.get("User-Agent"):
-        response_status = "User-Agent missong"
+        response_status = "User-Agent missing"
         logs_db.log_request("/api/<title>", title, response_status, time.time() - start_time)
         return jsonify({"error": "User-Agent header is required"}), 400
     # ---
@@ -79,7 +79,7 @@ def get_titles():
     # ---
     # Check for User-Agent header
     if not request.headers.get("User-Agent"):
-        response_status = "User-Agent missong"
+        response_status = "User-Agent missing"
         logs_db.log_request("/api/list", titles, response_status, delta)
         return jsonify({"error": "User-Agent header is required"}), 400
     # ---
