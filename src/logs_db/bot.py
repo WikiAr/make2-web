@@ -128,13 +128,31 @@ def log_request(endpoint, request_data, response_status, response_time):
     return result
 
 
-def sum_response_count(table_name="logs"):
+def add_status(status, query, params):
+    # ---
+    if status == "Category":
+        query += " WHERE response_status like 'تصنيف%'"
+    else:
+        query += " WHERE response_status = ?"
+        params.append(status)
+    # ---
+    return query, params
+
+
+def sum_response_count(status="", table_name="logs"):
     # ---
     query = f"select sum(response_count) as count_all from {table_name}"
     # ---
-    result = fetch_all(query, (), fetch_one=True)
+    params = ()
     # ---
-    result = result["count_all"]
+    if status:
+        query, params = add_status(status, query, params)
+    # ---
+    result = fetch_all(query, params, fetch_one=True)
+    # ---
+    print("result", result)
+    # ---
+    result = result["count_all"] or 0
     # ---
     return result
 
@@ -157,8 +175,7 @@ def count_all(status="", table_name="logs"):
     params = ()
     # ---
     if status:
-        query += " WHERE response_status = ?"
-        params = (status,)
+        query, params = add_status(status, query, params)
     # ---
     result = fetch_all(query, params, fetch_one=True)
     # ---
@@ -183,8 +200,7 @@ def get_logs(per_page=10, offset=0, order="ASC", order_by="timestamp", status=""
     params = (per_page, offset)
     # ---
     if status:
-        query += " WHERE response_status = ?"
-        params = (status, per_page, offset)
+        query, params = add_status(status, query, params)
     # ---
     query += f"ORDER BY {order_by} {order} LIMIT ? OFFSET ?"
     # ---
