@@ -55,6 +55,20 @@ def init_db():
     );"""
     # ---
     db_commit(query)
+    # ---
+    query = """
+    CREATE TABLE IF NOT EXISTS list_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        endpoint TEXT NOT NULL,
+        request_data TEXT NOT NULL,
+        response_status TEXT NOT NULL,
+        response_time REAL,
+        response_count INTEGER DEFAULT 1,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(request_data, response_status)
+    );"""
+    # ---
+    db_commit(query)
 
 
 def fetch_all(query, params=(), fetch_one=False):
@@ -77,7 +91,7 @@ def fetch_all(query, params=(), fetch_one=False):
 
     except sqlite3.Error as e:
         print(f"Database error in view_logs: {e}")
-        if "no such table: logs" in str(e):
+        if "no such table" in str(e):
             init_db()
         logs = []
 
@@ -90,59 +104,93 @@ def log_request(endpoint, request_data, response_status, response_time):
     # ---
     response_status = str(response_status)
     # ---
-    result = db_commit("""
-        INSERT INTO logs (endpoint, request_data, response_status, response_time)
+    response_status = str(response_status)
+    # ---
+    table_name = "logs" if endpoint != "/api/list" else "list_logs"
+    # ---
+    result = db_commit(
+        f"""
+        INSERT INTO {table_name} (endpoint, request_data, response_status, response_time)
         VALUES (?, ?, ?, ?)
         ON CONFLICT(request_data, response_status) DO UPDATE SET
             response_count = response_count + 1,
             response_time = excluded.response_time,
             timestamp = CURRENT_TIMESTAMP
-    """, (endpoint, str(request_data), response_status, response_time))
+    """,
+        (endpoint, str(request_data), response_status, response_time),
+    )
     # ---
     if result is not True:
         print(f"Error logging request: {result}")
-        if "no such table: logs" in str(result):
+        if "no such table" in str(result):
             init_db()
     # ---
     return result
 
 
-def log_request_old(endpoint, request_data, response_status, response_time):
+def sum_response_count(table_name="logs"):
     # ---
-    response_time = round(response_time, 3)
+    query = f"select sum(response_count) as count_all from {table_name}"
     # ---
-    result = db_commit("""
-        INSERT INTO logs (endpoint, request_data, response_status, response_time)
-        VALUES (?, ?, ?, ?)
-    """, (endpoint, str(request_data), response_status, response_time))
+    result = fetch_all(query, (), fetch_one=True)
     # ---
-    if result is not True:
-        print(f"Error logging request: {result}")
-        if "no such table: logs" in str(result):
-            init_db()
+    result = result["count_all"]
     # ---
     return result
 
 
-def count_all():
+def get_response_status(table_name="logs"):
     # ---
-    result = fetch_all("SELECT COUNT(*) FROM logs", (), fetch_one=True)
+    query = f"select response_status, count(response_status) as numbers from {table_name} group by response_status having count(*) > 2"
     # ---
-    total_logs = result['COUNT(*)']
+    result = fetch_all(query, ())
+    # ---
+    result = [row['response_status'] for row in result]
+    # ---
+    return result
+
+
+def count_all(status="", table_name="logs"):
+    # ---
+    query = f"SELECT COUNT(*) FROM {table_name}"
+    # ---
+    params = ()
+    # ---
+    if status:
+        query += " WHERE response_status = ?"
+        params = (status,)
+    # ---
+    result = fetch_all(query, params, fetch_one=True)
+    # ---
+    if not result:
+        return 0
+    # ---
+    if isinstance(result, list):
+        result = result[0]
+    # ---
+    total_logs = result["COUNT(*)"]
     # ---
     return total_logs
 
 
-def get_logs(per_page=10, offset=0, order='ASC', order_by="timestamp"):
+def get_logs(per_page=10, offset=0, order="ASC", order_by="timestamp", status="", table_name="logs"):
     # ---
-    if order not in ['ASC', 'DESC']:
-        order = 'ASC'
+    if order not in ["ASC", "DESC"]:
+        order = "ASC"
     # ---
-    query = f"SELECT * FROM logs ORDER BY {order_by} {order} LIMIT ? OFFSET ?"
+    query = f"SELECT * FROM {table_name} "
+    # ---
+    params = (per_page, offset)
+    # ---
+    if status:
+        query += " WHERE response_status = ?"
+        params = (status, per_page, offset)
+    # ---
+    query += f"ORDER BY {order_by} {order} LIMIT ? OFFSET ?"
     # ---
     # {'id': 1, 'endpoint': 'api', 'request_data': 'Category:1934-35 in Bulgarian football', 'response_status': 'true', 'response_time': 123123.0, 'response_count': 6, 'timestamp': '2025-04-10 01:08:58'}
     # ---
-    logs = fetch_all(query, (per_page, offset))
+    logs = fetch_all(query, params)
     # ---
     return logs
 
@@ -152,7 +200,10 @@ if __name__ == "__main__":
     init_db()
     # ---
     print("count_all", count_all())
+    print("get_response_status", get_response_status())
     # ---
-    log_request('api', 'Category:1934-35 in Bulgarian football', 'true', 123123)
+    qua = '''UPDATE logs
+    SET request_data = REPLACE(request_data, '_', ' ')
+    '''
     # ---
-    print("get_logs", get_logs())
+    db_commit(qua)

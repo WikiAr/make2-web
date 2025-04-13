@@ -3,48 +3,61 @@
 <title>API LOGS</title>
 {% endblock %}
 
+{% set common_args = {
+    'per_page': tab.per_page,
+    'order': tab.order,
+    'table_name': tab.table_name,
+    'status': tab.status
+} %}
+
 {% block content %}
 </div>
 <div class="col-11">
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title mb-0 d-flex align-items-center justify-content-center">
-                سجلات
-            </h4>
+            <span class="card-title mb-0 d-flex align-items-center justify-content-center h4">
+                سجلات {{ tab.table_name }} (<span class="">{{ tab.total_logs }} طلب</span>)
+            </span>
         </div>
         <div class="card-body">
             <!-- Filter Form -->
             <form method="get" action="{{ url_for('view_logs') }}" class="form-inline mb-3 gap-2">
+                <input type="text" name="table_name" value="{{ tab.table_name }}" hidden />
                 <!-- d-flex justify-content-center align-items-center -->
                 <div class="row">
                     <div class="col-md-2">
                         <label for="per_page" class="me-2">عدد السجلات:</label>
                         <select name="per_page" id="per_page" class="form-select w-auto">
                             {% for n in [10, 20, 50, 100, 150, 200] %}
-                            <option value="{{ n }}" {% if per_page == n %}selected{% endif %}>{{ n }}</option>
+                            <option value="{{ n }}" {% if tab.per_page == n %}selected{% endif %}>{{ n }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="order_by" class="me-2">ترتيب حسب:</label>
                         <select name="order_by" id="order_by" class="form-select w-auto">
                             {% for order_type in order_by_types %}
-                            <option value="{{ order_type }}" {% if order_by == order_type %}selected{% endif %}>
+                            <option value="{{ order_type }}" {% if tab.order_by == order_type %}selected{% endif %}>
                                 {{ order_type }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="order" class="ms-3 me-2">ترتيب السجلات:</label>
                         <select name="order" id="order" class="form-select w-auto">
-                            <option value="DESC" {% if order == 'DESC' %}selected{% endif %}>تنازلي (الأحدث أولاً)
-                            </option>
-                            <option value="ASC" {% if order == 'ASC' %}selected{% endif %}>تصاعدي (الأقدم أولاً)
-                            </option>
+                            <option value="DESC" {% if tab.order == 'DESC' %}selected{% endif %}>DESC</option>
+                            <option value="ASC" {% if tab.order == 'ASC' %}selected{% endif %}>ASC</option>
                         </select>
-
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
+                        <label for="status" class="ms-3 me-2">الناتج:</label>
+                        <select name="status" id="status" class="form-select w-auto">
+                            {% for st in status_table %}
+                            <option value="{{ st }}" {% if tab.status == st %}selected{% endif %}>{{ st }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-1">
                         <button class="btn btn-primary ms-3" type="submit" onclick1="applySettings()">تطبيق</button>
                     </div>
                 </div>
@@ -55,43 +68,43 @@
                     <nav aria-label="Page navigation">
                         <ul class="pagination justify-content-center">
                             <!-- First page -->
-                            <li class="page-item {% if page == 1 %}disabled{% endif %}">
-                                <a class="page-link"
-                                    href="{{ url_for('view_logs', page=1, per_page=per_page, order=order) }}"
-                                    aria-label="First">
+                            <li class="page-item {% if tab.page == 1 %}disabled{% endif %}">
+                                <a class="page-link" href="{{ url_for('view_logs', page=1, **common_args) }}"
+                                    aria-label="First Page">
                                     <span aria-hidden="true">&laquo;&laquo;</span>
                                 </a>
                             </li>
+
                             <!-- Previous page -->
-                            <li class="page-item {% if page == 1 %}disabled{% endif %}">
-                                <a class="page-link"
-                                    href="{{ url_for('view_logs', page=page-1, per_page=per_page, order=order) }}"
-                                    aria-label="Previous">
+                            <li class="page-item {% if tab.page == 1 %}disabled{% endif %}">
+                                <a class="page-link" href="{{ url_for('view_logs', page=tab.page-1, **common_args) }}"
+                                    aria-label="Previous Page">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
 
                             <!-- Page Numbers -->
-                            {% for p in range(start_page, end_page + 1) %}
-                            <li class="page-item {% if p == page %}active{% endif %}">
-                                <a class="page-link"
-                                    href="{{ url_for('view_logs', page=p, per_page=per_page, order=order) }}">{{ p }}</a>
+                            {% for p in range(tab.start_page, tab.end_page + 1) %}
+                            <li class="page-item {% if p == tab.page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('view_logs', page=p, **common_args) }}">
+                                    {{ p }}
+                                </a>
                             </li>
                             {% endfor %}
 
-                            <!-- Next -->
-                            <li class="page-item {% if page == total_pages %}disabled{% endif %}">
-                                <a class="page-link"
-                                    href="{{ url_for('view_logs', page=page+1, per_page=per_page, order=order) }}"
-                                    aria-label="Next">
+                            <!-- Next page -->
+                            <li class="page-item {% if tab.page == tab.total_pages %}disabled{% endif %}">
+                                <a class="page-link" href="{{ url_for('view_logs', page=tab.page+1, **common_args) }}"
+                                    aria-label="Next Page">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>
-                            <!-- Last -->
-                            <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+
+                            <!-- Last page -->
+                            <li class="page-item {% if tab.page == tab.total_pages %}disabled{% endif %}">
                                 <a class="page-link"
-                                    href="{{ url_for('view_logs', page=total_pages, per_page=per_page, order=order) }}"
-                                    aria-label="Last">
+                                    href="{{ url_for('view_logs', page=tab.total_pages, **common_args) }}"
+                                    aria-label="Last Page">
                                     <span aria-hidden="true">&raquo;&raquo;</span>
                                 </a>
                             </li>
@@ -101,8 +114,8 @@
 
                 <!-- Page info -->
                 <div class="col-12 text-center text-muted">
-                    <small>صفحة {{ page }} من {{ total_pages }}
-                        ({{ start_log }} - {{ end_log }} من إجمالي {{ total_logs }} سجل)</small>
+                    <small>صفحة {{ tab.page }} من {{ tab.total_pages }}
+                        ({{ tab.start_log }} - {{ tab.end_log }} من إجمالي {{ tab.total_logs }} سجل)</small>
                 </div>
             </div>
             <div class="row">
