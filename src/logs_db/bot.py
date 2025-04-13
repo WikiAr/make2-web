@@ -104,6 +104,8 @@ def log_request(endpoint, request_data, response_status, response_time):
     # ---
     response_status = str(response_status)
     # ---
+    response_status = str(response_status)
+    # ---
     table_name = "logs" if endpoint != "/api/list" else "list_logs"
     # ---
     result = db_commit(
@@ -190,3 +192,9 @@ if __name__ == "__main__":
     # ---
     print("count_all", count_all())
     print("get_response_status", get_response_status())
+    # ---
+    qua = '''UPDATE logs
+    SET request_data = REPLACE(request_data, '_', ' ')
+    '''
+    # ---
+    db_commit(qua)

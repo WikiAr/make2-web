@@ -3,3 +3,4 @@ src/static_old
 src/app copy.py
 *.db
 *.pyc
+*.sql

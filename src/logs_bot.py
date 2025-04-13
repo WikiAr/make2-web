@@ -51,11 +51,13 @@ def view_logs(request):
     for log in logs:
         # {'id': 1, 'endpoint': 'api', 'request_data': 'Category:1934-35 in Bulgarian football', 'response_status': 'true', 'response_time': 123123.0, 'response_count': 6, 'timestamp': '2025-04-10 01:08:58'}
         # ---
+        request_data = log["request_data"].replace("_", ' ')
+        # ---
         log_list.append(
             {
                 "id": log["id"],
                 "endpoint": log["endpoint"],
-                "request_data": log["request_data"],
+                "request_data": request_data,
                 "response_status": log["response_status"],
                 "response_time": log["response_time"],
                 "timestamp": log["timestamp"],
