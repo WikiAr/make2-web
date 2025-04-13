@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from .bot import db_commit, init_db, fetch_all, log_request, count_all, get_logs
+from .bot import db_commit, init_db, fetch_all, log_request, count_all, get_logs, get_response_status
 
 __all__ = [
     "db_commit",
@@ -9,4 +9,5 @@ __all__ = [
     "log_request",
     "get_logs",
     "count_all",
+    "get_response_status",
 ]

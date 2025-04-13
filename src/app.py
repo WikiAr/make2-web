@@ -3,6 +3,7 @@ import os
 import sys
 import time
 from flask import Flask, jsonify, render_template, request
+
 # from flask_cors import CORS
 
 import logs_db
@@ -32,7 +33,7 @@ app = Flask(__name__)
 def get_title(title) -> str:
     # ---
     # Check for User-Agent header
-    if not request.headers.get('User-Agent'):
+    if not request.headers.get("User-Agent"):
         response_status = "User-Agent missong"
         logs_db.log_request("/api/<title>", title, response_status, delta)
         return jsonify({"error": "User-Agent header is required"}), 400
@@ -65,7 +66,7 @@ def get_title(title) -> str:
 @app.route("/api/list", methods=["POST"])
 def get_titles():
     # Check for User-Agent header
-    if not request.headers.get('User-Agent'):
+    if not request.headers.get("User-Agent"):
         response_status = "User-Agent missong"
         logs_db.log_request("/api/<title>", title, response_status, delta)
         return jsonify({"error": "User-Agent header is required"}), 400
@@ -100,13 +101,7 @@ def get_titles():
     # ---
     delta = time.time() - start_time
     # ---
-    response_data = {
-        "results" : json_result,
-        "no_labs": len(no_labs),
-        "with_labs": len_result,
-        "duplicates": duplicates,
-        "time": delta
-    }
+    response_data = {"results": json_result, "no_labs": len(no_labs), "with_labs": len_result, "duplicates": duplicates, "time": delta}
     # ---
     # تحديد حالة الاستجابة
     response_status = "success" if len_result > 0 else "no_result"
@@ -118,10 +113,10 @@ def get_titles():
 @app.route("/logs", methods=["GET"])
 def view_logs():
     # ---
-    page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 10, type=int)
-    order = request.args.get('order', 'asc').upper()
-    order_by = request.args.get('order_by', 'timestamp')
+    page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("per_page", 10, type=int)
+    order = request.args.get("order", "asc").upper()
+    order_by = request.args.get("order_by", "timestamp")
 
     # Validate values
     page = max(1, page)
@@ -145,22 +140,27 @@ def view_logs():
     # ---
     logs = logs_db.get_logs(per_page, offset, order, order_by=order_by)
     # ---
-    total_logs = logs_db.count_all()
-    # ---
     # Convert to list of dicts
     log_list = []
+    # ---
     for log in logs:
         # {'id': 1, 'endpoint': 'api', 'request_data': 'Category:1934-35 in Bulgarian football', 'response_status': 'true', 'response_time': 123123.0, 'response_count': 6, 'timestamp': '2025-04-10 01:08:58'}
         # ---
-        log_list.append({
-            "id": log["id"],
-            "endpoint": log["endpoint"],
-            "request_data": log["request_data"],
-            "response_status": log["response_status"],
-            "response_time": log["response_time"],
-            "timestamp": log["timestamp"],
-            "response_count": log["response_count"],
-        })
+        log_list.append(
+            {
+                "id": log["id"],
+                "endpoint": log["endpoint"],
+                "request_data": log["request_data"],
+                "response_status": log["response_status"],
+                "response_time": log["response_time"],
+                "timestamp": log["timestamp"],
+                "response_count": log["response_count"],
+            }
+        )
+    # ---
+    total_logs = logs_db.count_all()
+    # ---
+    status = logs_db.get_response_status()
     # ---
     # Pagination calculations
     total_pages = (total_logs + per_page - 1) // per_page
@@ -170,21 +170,20 @@ def view_logs():
     end_page = min(start_page + 4, total_pages)
     start_page = max(1, end_page - 4)
     # ---
-    return render_template(
-        "logs.html",
-        logs=log_list,
-        order_by_types=order_by_types,
-        page=page,
-        order_by=order_by,
-        per_page=per_page,
-        total_pages=total_pages,
-        total_logs=total_logs,
-        start_log=start_log,
-        end_log=end_log,
-        start_page=start_page,
-        end_page=end_page,
-        order=order
-    )
+    table_new = {
+        "total_pages": total_pages,
+        "total_logs": total_logs,
+        "start_log": start_log,
+        "end_log": end_log,
+        "start_page": start_page,
+        "end_page": end_page,
+        "order": order,
+        "order_by": order_by,
+        "per_page": per_page,
+        "page": page,
+    }
+    # ---
+    return render_template("logs.html", logs=log_list, order_by_types=order_by_types, tab=table_new, status=status)
 
 
 @app.route("/", methods=["GET"])

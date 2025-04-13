@@ -90,14 +90,17 @@ def log_request(endpoint, request_data, response_status, response_time):
     # ---
     response_status = str(response_status)
     # ---
-    result = db_commit("""
+    result = db_commit(
+        """
         INSERT INTO logs (endpoint, request_data, response_status, response_time)
         VALUES (?, ?, ?, ?)
         ON CONFLICT(request_data, response_status) DO UPDATE SET
             response_count = response_count + 1,
             response_time = excluded.response_time,
             timestamp = CURRENT_TIMESTAMP
-    """, (endpoint, str(request_data), response_status, response_time))
+    """,
+        (endpoint, str(request_data), response_status, response_time),
+    )
     # ---
     if result is not True:
         print(f"Error logging request: {result}")
@@ -111,10 +114,13 @@ def log_request_old(endpoint, request_data, response_status, response_time):
     # ---
     response_time = round(response_time, 3)
     # ---
-    result = db_commit("""
+    result = db_commit(
+        """
         INSERT INTO logs (endpoint, request_data, response_status, response_time)
         VALUES (?, ?, ?, ?)
-    """, (endpoint, str(request_data), response_status, response_time))
+    """,
+        (endpoint, str(request_data), response_status, response_time),
+    )
     # ---
     if result is not True:
         print(f"Error logging request: {result}")
@@ -124,19 +130,28 @@ def log_request_old(endpoint, request_data, response_status, response_time):
     return result
 
 
+def get_response_status():
+    # ---
+    query = "select response_status, count(response_status) from logs group by response_status having count(*) > 2"
+    # ---
+    result = fetch_all(query, (), fetch_one=True)
+    # ---
+    return result
+
+
 def count_all():
     # ---
     result = fetch_all("SELECT COUNT(*) FROM logs", (), fetch_one=True)
     # ---
-    total_logs = result['COUNT(*)']
+    total_logs = result["COUNT(*)"]
     # ---
     return total_logs
 
 
-def get_logs(per_page=10, offset=0, order='ASC', order_by="timestamp"):
+def get_logs(per_page=10, offset=0, order="ASC", order_by="timestamp"):
     # ---
-    if order not in ['ASC', 'DESC']:
-        order = 'ASC'
+    if order not in ["ASC", "DESC"]:
+        order = "ASC"
     # ---
     query = f"SELECT * FROM logs ORDER BY {order_by} {order} LIMIT ? OFFSET ?"
     # ---
@@ -153,6 +168,6 @@ if __name__ == "__main__":
     # ---
     print("count_all", count_all())
     # ---
-    log_request('api', 'Category:1934-35 in Bulgarian football', 'true', 123123)
+    log_request("api", "Category:1934-35 in Bulgarian football", "true", 123123)
     # ---
     print("get_logs", get_logs())
