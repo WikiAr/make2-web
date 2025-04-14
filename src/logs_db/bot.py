@@ -130,11 +130,15 @@ def log_request(endpoint, request_data, response_status, response_time):
 
 def add_status(status, query, params):
     # ---
+    params = list(params)
+    # ---
     if status == "Category":
         query += " WHERE response_status like 'تصنيف%'"
     else:
         query += " WHERE response_status = ?"
         params.append(status)
+    # ---
+    params = tuple(params)
     # ---
     return query, params
 
