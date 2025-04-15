@@ -211,10 +211,10 @@ def count_all(status="", table_name="logs"):
     return total_logs
 
 
-def get_logs(per_page=10, offset=0, order="ASC", order_by="timestamp", status="", table_name="logs"):
+def get_logs(per_page=10, offset=0, order="DESC", order_by="timestamp", status="", table_name="logs"):
     # ---
     if order not in ["ASC", "DESC"]:
-        order = "ASC"
+        order = "DESC"
     # ---
     query = f"SELECT * FROM {table_name} "
     # ---

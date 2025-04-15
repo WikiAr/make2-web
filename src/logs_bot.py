@@ -21,7 +21,7 @@ def view_logs(request):
     page = request.args.get("page", 1, type=int)
     # ---
     per_page = request.args.get("per_page", 10, type=int)
-    order = request.args.get("order", "asc").upper()
+    order = request.args.get("order", "desc").upper()
     order_by = request.args.get("order_by", "timestamp")
     status = request.args.get("status", "")
     # ---
