@@ -23,10 +23,15 @@ def change_db_path(file):
     # ---
     db_path = str(main_path) + f"/{file}"
     # ---
-    if os.path.exists(db_path):
+    dbs_path = Path(main_path)
+    # ---
+    # list of files *.db in dbs_path
+    dbs = [str(f.name) for f in dbs_path.glob("*.db") if f.is_file()]
+    # ---
+    if file in dbs and os.path.exists(db_path):
         db_path_main[1] = str(db_path)
     # ---
-    return main_path
+    return dbs
 
 
 def db_commit(query, params=[]):

@@ -13,10 +13,7 @@ def view_logs(request):
     dbs = []
     # ---
     if db_path:
-        dbs_path = logs_db.change_db_path(db_path)
-        # list of files *.db in dbs_path
-        dbs_path = Path(dbs_path)
-        dbs = [str(file.name) for file in dbs_path.glob("*.db") if file.is_file()]
+        dbs = logs_db.change_db_path(db_path)
         # ---
         db_path = db_path if db_path in dbs else "new_logs.db"
     # ---
