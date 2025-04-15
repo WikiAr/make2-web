@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 import os
-import sys
+# import sys
+# import json
 import sqlite3
-import json
 from pathlib import Path
 
 HOME = os.getenv("HOME")
 
+main_path = Path(__file__).parent.parent.parent
+# ---
 if HOME:
-    db_path = HOME + "/www/python/bots/new_logs.db"
-else:
-    db_path = Path(__file__).parent.parent.parent / "new_logs.db"
+    main_path = HOME + "/www/python/dbs"
+# ---
+db_path = f"{str(main_path)}/new_logs.db"
 
 db_path_main = {1: str(db_path)}
 
@@ -19,17 +21,12 @@ print("db_path", db_path_main[1])
 
 def change_db_path(file):
     # ---
-    paths = Path(__file__).parent.parent.parent
-    # ---
-    if HOME:
-        paths = HOME + "/www/python/bots"
-    # ---
-    db_path = str(paths) + f"/{file}"
+    db_path = str(main_path) + f"/{file}"
     # ---
     if os.path.exists(db_path):
         db_path_main[1] = str(db_path)
     # ---
-    return paths
+    return main_path
 
 
 def db_commit(query, params=[]):
