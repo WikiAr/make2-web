@@ -114,7 +114,7 @@ def get_titles():
     return jsonify(response_data)
 
 
-@app.route("/logs", methods=["GET"])
+@app.route("/logs1", methods=["GET"])
 def view_logs():
     # ---
     result = logs_bot.view_logs(request)
