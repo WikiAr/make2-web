@@ -16,7 +16,7 @@ db_path = str(db_path)
 print("db_path", db_path)
 
 
-def db_commit(query, params=()):
+def db_commit(query, params=[]):
     try:
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
@@ -71,7 +71,7 @@ def init_db():
     db_commit(query)
 
 
-def fetch_all(query, params=(), fetch_one=False):
+def fetch_all(query, params=[], fetch_one=False):
     try:
         with sqlite3.connect(db_path) as conn:
             # Set row factory to return rows as dictionaries
@@ -130,7 +130,8 @@ def log_request(endpoint, request_data, response_status, response_time):
 
 def add_status(status, query, params):
     # ---
-    params = list(params)
+    if not isinstance(status, list):
+        params = list(params)
     # ---
     if status == "Category":
         query += " WHERE response_status like 'تصنيف%'"
@@ -138,7 +139,7 @@ def add_status(status, query, params):
         query += " WHERE response_status = ?"
         params.append(status)
     # ---
-    params = tuple(params)
+    # params = tuple(params)
     # ---
     return query, params
 
@@ -147,7 +148,7 @@ def sum_response_count(status="", table_name="logs"):
     # ---
     query = f"select sum(response_count) as count_all from {table_name}"
     # ---
-    params = ()
+    params = []
     # ---
     if status:
         query, params = add_status(status, query, params)
@@ -176,7 +177,7 @@ def count_all(status="", table_name="logs"):
     # ---
     query = f"SELECT COUNT(*) FROM {table_name}"
     # ---
-    params = ()
+    params = []
     # ---
     if status:
         query, params = add_status(status, query, params)
@@ -201,14 +202,22 @@ def get_logs(per_page=10, offset=0, order="ASC", order_by="timestamp", status=""
     # ---
     query = f"SELECT * FROM {table_name} "
     # ---
-    params = (per_page, offset)
+    params = []
     # ---
     if status:
         query, params = add_status(status, query, params)
+        # ---
+        # if status == "Category":
+        #     query += " WHERE response_status like 'تصنيف%'"
+        # else:
+        #     query += " WHERE response_status = ?"
+        #     params.append(status)
     # ---
     query += f"ORDER BY {order_by} {order} LIMIT ? OFFSET ?"
     # ---
     # {'id': 1, 'endpoint': 'api', 'request_data': 'Category:1934-35 in Bulgarian football', 'response_status': 'true', 'response_time': 123123.0, 'response_count': 6, 'timestamp': '2025-04-10 01:08:58'}
+    # ---
+    params.extend([per_page, offset])
     # ---
     logs = fetch_all(query, params)
     # ---
@@ -219,11 +228,9 @@ if __name__ == "__main__":
     # python3 I:/core/bots/ma/web/src/logs_db/bot.py
     init_db()
     # ---
-    print("count_all", count_all())
+    print("count_all", count_all(status="no_result"))
+    # ---
     print("get_response_status", get_response_status())
     # ---
-    qua = '''UPDATE logs
-    SET request_data = REPLACE(request_data, '_', ' ')
-    '''
-    # ---
-    db_commit(qua)
+    # print("get_logs", get_logs(status=""))
+    print("get_logs", get_logs(status="no_result"))
