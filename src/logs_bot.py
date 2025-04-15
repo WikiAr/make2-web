@@ -22,7 +22,7 @@ def view_logs(request):
     # ---
     per_page = request.args.get("per_page", 10, type=int)
     order = request.args.get("order", "desc").upper()
-    order_by = request.args.get("order_by", "timestamp")
+    order_by = request.args.get("order_by", "response_count")
     status = request.args.get("status", "")
     # ---
     table_name = request.args.get("table_name", "")
