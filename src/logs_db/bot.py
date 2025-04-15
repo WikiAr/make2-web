@@ -1,24 +1,42 @@
 # -*- coding: utf-8 -*-
 import os
-import sys
+# import sys
+# import json
 import sqlite3
-import json
 from pathlib import Path
 
 HOME = os.getenv("HOME")
 
+main_path = Path(__file__).parent.parent.parent
+# ---
 if HOME:
-    db_path = HOME + "/www/python/bots/new_logs.db"
-else:
-    db_path = Path(__file__).parent.parent.parent / "new_logs.db"
+    main_path = HOME + "/www/python/dbs"
+# ---
+db_path = f"{str(main_path)}/new_logs.db"
 
-db_path = str(db_path)
-print("db_path", db_path)
+db_path_main = {1: str(db_path)}
+
+print("db_path", db_path_main[1])
 
 
-def db_commit(query, params=()):
+def change_db_path(file):
+    # ---
+    db_path = str(main_path) + f"/{file}"
+    # ---
+    dbs_path = Path(main_path)
+    # ---
+    # list of files *.db in dbs_path
+    dbs = [str(f.name) for f in dbs_path.glob("*.db") if f.is_file()]
+    # ---
+    if file in dbs and os.path.exists(db_path):
+        db_path_main[1] = str(db_path)
+    # ---
+    return dbs
+
+
+def db_commit(query, params=[]):
     try:
-        with sqlite3.connect(db_path) as conn:
+        with sqlite3.connect(db_path_main[1]) as conn:
             cursor = conn.cursor()
             cursor.execute(query, params)
         conn.commit()
@@ -71,9 +89,9 @@ def init_db():
     db_commit(query)
 
 
-def fetch_all(query, params=(), fetch_one=False):
+def fetch_all(query, params=[], fetch_one=False):
     try:
-        with sqlite3.connect(db_path) as conn:
+        with sqlite3.connect(db_path_main[1]) as conn:
             # Set row factory to return rows as dictionaries
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
@@ -130,11 +148,16 @@ def log_request(endpoint, request_data, response_status, response_time):
 
 def add_status(status, query, params):
     # ---
+    if not isinstance(status, list):
+        params = list(params)
+    # ---
     if status == "Category":
         query += " WHERE response_status like 'تصنيف%'"
     else:
         query += " WHERE response_status = ?"
         params.append(status)
+    # ---
+    # params = tuple(params)
     # ---
     return query, params
 
@@ -143,7 +166,7 @@ def sum_response_count(status="", table_name="logs"):
     # ---
     query = f"select sum(response_count) as count_all from {table_name}"
     # ---
-    params = ()
+    params = []
     # ---
     if status:
         query, params = add_status(status, query, params)
@@ -172,7 +195,7 @@ def count_all(status="", table_name="logs"):
     # ---
     query = f"SELECT COUNT(*) FROM {table_name}"
     # ---
-    params = ()
+    params = []
     # ---
     if status:
         query, params = add_status(status, query, params)
@@ -190,21 +213,29 @@ def count_all(status="", table_name="logs"):
     return total_logs
 
 
-def get_logs(per_page=10, offset=0, order="ASC", order_by="timestamp", status="", table_name="logs"):
+def get_logs(per_page=10, offset=0, order="DESC", order_by="timestamp", status="", table_name="logs"):
     # ---
     if order not in ["ASC", "DESC"]:
-        order = "ASC"
+        order = "DESC"
     # ---
     query = f"SELECT * FROM {table_name} "
     # ---
-    params = (per_page, offset)
+    params = []
     # ---
     if status:
         query, params = add_status(status, query, params)
+        # ---
+        # if status == "Category":
+        #     query += " WHERE response_status like 'تصنيف%'"
+        # else:
+        #     query += " WHERE response_status = ?"
+        #     params.append(status)
     # ---
     query += f"ORDER BY {order_by} {order} LIMIT ? OFFSET ?"
     # ---
     # {'id': 1, 'endpoint': 'api', 'request_data': 'Category:1934-35 in Bulgarian football', 'response_status': 'true', 'response_time': 123123.0, 'response_count': 6, 'timestamp': '2025-04-10 01:08:58'}
+    # ---
+    params.extend([per_page, offset])
     # ---
     logs = fetch_all(query, params)
     # ---
@@ -215,11 +246,9 @@ if __name__ == "__main__":
     # python3 I:/core/bots/ma/web/src/logs_db/bot.py
     init_db()
     # ---
-    print("count_all", count_all())
+    print("count_all", count_all(status="no_result"))
+    # ---
     print("get_response_status", get_response_status())
     # ---
-    qua = '''UPDATE logs
-    SET request_data = REPLACE(request_data, '_', ' ')
-    '''
-    # ---
-    db_commit(qua)
+    # print("get_logs", get_logs(status=""))
+    print("get_logs", get_logs(status="no_result"))
