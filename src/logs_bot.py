@@ -17,6 +17,8 @@ def view_logs(request):
         # list of files *.db in dbs_path
         dbs_path = Path(dbs_path)
         dbs = [str(file.name) for file in dbs_path.glob("*.db") if file.is_file()]
+        # ---
+        db_path = db_path if db_path in dbs else "new_logs.db"
     # ---
     page = request.args.get("page", 1, type=int)
     # ---
