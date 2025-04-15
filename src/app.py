@@ -119,7 +119,7 @@ def view_logs():
     # ---
     result = logs_bot.view_logs(request)
     # ---
-    return render_template("logs.html", logs=result["logs"], order_by_types=result["order_by_types"], tab=result["tab"], status_table=result["status_table"])
+    return render_template("logs.html", logs=result["logs"], order_by_types=result["order_by_types"], tab=result["tab"], status_table=result["status_table"], dbs=result["dbs"])
 
 
 @app.route("/", methods=["GET"])

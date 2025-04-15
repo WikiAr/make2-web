@@ -33,7 +33,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label for="order_by" class="me-2">ترتيب حسب:</label>
                         <select name="order_by" id="order_by" class="form-select w-auto">
                             {% for order_type in order_by_types %}
@@ -42,14 +42,14 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label for="order" class="ms-3 me-2">ترتيب السجلات:</label>
                         <select name="order" id="order" class="form-select w-auto">
                             <option value="DESC" {% if tab.order == 'DESC' %}selected{% endif %}>DESC</option>
                             <option value="ASC" {% if tab.order == 'ASC' %}selected{% endif %}>ASC</option>
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label for="status" class="ms-3 me-2">الناتج:</label>
                         <select name="status" id="status" class="form-select w-auto">
                             {% for st in status_table %}
@@ -57,6 +57,17 @@
                             {% endfor %}
                         </select>
                     </div>
+                    {% if dbs %}
+                    <div class="col-md-2">
+                        <label for="db_path" class="me-2">ترتيب حسب:</label>
+                        <select name="db_path" id="db_path" class="form-select w-auto">
+                            {% for db in dbs %}
+                            <option value="{{ db }}" {% if tab.db_path == db %}selected{% endif %}>
+                                {{ db }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
                     <div class="col-md-1">
                         <button class="btn btn-primary ms-3" type="submit" onclick1="applySettings()">تطبيق</button>
                     </div>

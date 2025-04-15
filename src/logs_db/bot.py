@@ -12,13 +12,29 @@ if HOME:
 else:
     db_path = Path(__file__).parent.parent.parent / "new_logs.db"
 
-db_path = str(db_path)
-print("db_path", db_path)
+db_path_main = {1: str(db_path)}
+
+print("db_path", db_path_main[1])
+
+
+def change_db_path(file):
+    # ---
+    paths = Path(__file__).parent.parent.parent
+    # ---
+    if HOME:
+        paths = HOME + "/www/python/bots"
+    # ---
+    db_path = str(paths) + f"/{file}"
+    # ---
+    if os.path.exists(db_path):
+        db_path_main[1] = str(db_path)
+    # ---
+    return paths
 
 
 def db_commit(query, params=[]):
     try:
-        with sqlite3.connect(db_path) as conn:
+        with sqlite3.connect(db_path_main[1]) as conn:
             cursor = conn.cursor()
             cursor.execute(query, params)
         conn.commit()
@@ -73,7 +89,7 @@ def init_db():
 
 def fetch_all(query, params=[], fetch_one=False):
     try:
-        with sqlite3.connect(db_path) as conn:
+        with sqlite3.connect(db_path_main[1]) as conn:
             # Set row factory to return rows as dictionaries
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()

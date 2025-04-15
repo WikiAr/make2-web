@@ -1,13 +1,25 @@
 # -*- coding: utf-8 -*-
 
-import logs_db
+import logs_db  # logs_db.change_db_path(file)
+from pathlib import Path
 
 db_tables = ["logs", "list_logs"]
 
 
 def view_logs(request):
     # ---
+    db_path = request.args.get("db_path")
+    # ---
+    dbs = []
+    # ---
+    if db_path:
+        dbs_path = logs_db.change_db_path(db_path)
+        # list of files *.db in dbs_path
+        dbs_path = Path(dbs_path)
+        dbs = [str(file.name) for file in dbs_path.glob("*.db") if file.is_file()]
+    # ---
     page = request.args.get("page", 1, type=int)
+    # ---
     per_page = request.args.get("per_page", 10, type=int)
     order = request.args.get("order", "asc").upper()
     order_by = request.args.get("order_by", "timestamp")
@@ -82,6 +94,7 @@ def view_logs(request):
     # ---
     table_new = {
         "sum_all": f"{sum_all:,}",
+        "db_path": db_path,
         "table_name": table_name,
         "total_pages": total_pages,
         "total_logs": f"{total_logs:,}",
@@ -103,6 +116,7 @@ def view_logs(request):
         status_table.append("Category")
     # ---
     result = {
+        "dbs": dbs,
         "logs": log_list,
         "order_by_types": order_by_types,
         "tab": table_new,
