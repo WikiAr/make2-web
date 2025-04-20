@@ -22,7 +22,9 @@ def view_logs(request):
     per_page = request.args.get("per_page", 10, type=int)
     order = request.args.get("order", "desc").upper()
     order_by = request.args.get("order_by", "response_count")
+    # ---
     status = request.args.get("status", "")
+    like = request.args.get("like", "")
     # ---
     table_name = request.args.get("table_name", "")
     # ---
@@ -54,7 +56,7 @@ def view_logs(request):
     # ---
     status = status if (status in status_table or status == "Category") else ""
     # ---
-    logs = logs_db.get_logs(per_page, offset, order, order_by=order_by, status=status, table_name=table_name)
+    logs = logs_db.get_logs(per_page, offset, order, order_by=order_by, status=status, table_name=table_name, like=like)
     # ---
     # Convert to list of dicts
     log_list = []
@@ -76,7 +78,7 @@ def view_logs(request):
             }
         )
     # ---
-    total_logs = logs_db.count_all(status=status, table_name=table_name)
+    total_logs = logs_db.count_all(status=status, table_name=table_name, like=like)
     # ---
     # Pagination calculations
     total_pages = (total_logs + per_page - 1) // per_page
@@ -86,7 +88,7 @@ def view_logs(request):
     end_page = min(start_page + 4, total_pages)
     start_page = max(1, end_page - 4)
     # ---
-    sum_all = logs_db.sum_response_count(status=status, table_name=table_name)
+    sum_all = logs_db.sum_response_count(status=status, table_name=table_name, like=like)
     # ---
     if status == "":
         status = "All"
@@ -106,6 +108,7 @@ def view_logs(request):
         "per_page": per_page,
         "page": page,
         "status": status,
+        "like": like,
     }
     # ---
     if "All" not in status_table:
