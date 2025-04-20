@@ -6,6 +6,7 @@
 {% set common_args = {
     'per_page': tab.per_page,
     'order': tab.order,
+    'like': tab.like,
     'table_name': tab.table_name,
     'status': tab.status
 } %}
@@ -84,8 +85,8 @@
                             </div>
                             <div class="col-auto">
                                 <div class="form-group">
-                                    <label for="lang" class="form-label">Like:</label>
-                                    <input type="text" id="lang" class="form-control" value="{{ tab.like }}"
+                                    <label for="like" class="form-label">Like:</label>
+                                    <input type="text" id="like" class="form-control" value="{{ tab.like }}"
                                         placeholder="%أفلام%">
                                 </div>
                             </div>
