@@ -146,30 +146,33 @@ def log_request(endpoint, request_data, response_status, response_time):
     return result
 
 
-def add_status(status, query, params):
+def add_status(query, params, status="", like=""):
     # ---
-    if not isinstance(status, list):
+    if not isinstance(params, list):
         params = list(params)
     # ---
-    if status == "Category":
-        query += " WHERE response_status like 'تصنيف%'"
-    else:
-        query += " WHERE response_status = ?"
-        params.append(status)
+    if status:
+        if status == "Category":
+            query += " WHERE response_status like 'تصنيف%'"
+        else:
+            query += " WHERE response_status = ?"
+            params.append(status)
+    elif like:
+        query += " WHERE response_status like ?"
+        params.append(like)
     # ---
     # params = tuple(params)
     # ---
     return query, params
 
 
-def sum_response_count(status="", table_name="logs"):
+def sum_response_count(status="", table_name="logs", like=""):
     # ---
     query = f"select sum(response_count) as count_all from {table_name}"
     # ---
     params = []
     # ---
-    if status:
-        query, params = add_status(status, query, params)
+    query, params = add_status(query, params, status=status, like=like)
     # ---
     result = fetch_all(query, params, fetch_one=True)
     # ---
@@ -191,14 +194,13 @@ def get_response_status(table_name="logs"):
     return result
 
 
-def count_all(status="", table_name="logs"):
+def count_all(status="", table_name="logs", like=""):
     # ---
     query = f"SELECT COUNT(*) FROM {table_name}"
     # ---
     params = []
     # ---
-    if status:
-        query, params = add_status(status, query, params)
+    query, params = add_status(query, params, status=status, like=like)
     # ---
     result = fetch_all(query, params, fetch_one=True)
     # ---
@@ -213,7 +215,7 @@ def count_all(status="", table_name="logs"):
     return total_logs
 
 
-def get_logs(per_page=10, offset=0, order="DESC", order_by="timestamp", status="", table_name="logs"):
+def get_logs(per_page=10, offset=0, order="DESC", order_by="timestamp", status="", table_name="logs", like=""):
     # ---
     if order not in ["ASC", "DESC"]:
         order = "DESC"
@@ -222,14 +224,7 @@ def get_logs(per_page=10, offset=0, order="DESC", order_by="timestamp", status="
     # ---
     params = []
     # ---
-    if status:
-        query, params = add_status(status, query, params)
-        # ---
-        # if status == "Category":
-        #     query += " WHERE response_status like 'تصنيف%'"
-        # else:
-        #     query += " WHERE response_status = ?"
-        #     params.append(status)
+    query, params = add_status(query, params, status=status, like=like)
     # ---
     query += f"ORDER BY {order_by} {order} LIMIT ? OFFSET ?"
     # ---
