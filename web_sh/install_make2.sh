@@ -6,6 +6,10 @@ if [ -z "$TOKEN" ]; then
     exit 1
 fi
 
+BRANCH="${2:-main}"
+
+echo ">>> clone --branch ${BRANCH} ."
+
 REPO_URL="https://MrIbrahem:${TOKEN}@github.com/MrIbrahem/make2.git"
 
 TARGET_DIR="$HOME/www/python/bots/make2"
@@ -27,7 +31,7 @@ cd $HOME || exit
 rm -rf "$CLONE_DIR"
 
 # Clone the repository
-if git clone "$REPO_URL" "$CLONE_DIR"; then
+if git clone --branch "$BRANCH" "$REPO_URL" "$CLONE_DIR"; then
     echo "Repository cloned successfully."
 else
     echo "Failed to clone the repository." >&2

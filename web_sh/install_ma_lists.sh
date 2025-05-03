@@ -5,7 +5,10 @@ if [ -z "$TOKEN" ]; then
     echo "Usage: $0 <TOKEN>"
     exit 1
 fi
-echo "token: $TOKEN"
+
+BRANCH="${2:-main}"
+
+echo ">>> clone --branch ${BRANCH} ."
 
 REPO_URL="https://MrIbrahem:${TOKEN}@github.com/MrIbrahem/ma_lists.git"
 
@@ -28,7 +31,7 @@ cd $HOME || exit
 rm -rf "$CLONE_DIR"
 
 # Clone the repository
-if git clone "$REPO_URL" "$CLONE_DIR"; then
+if git clone --branch "$BRANCH" "$REPO_URL" "$CLONE_DIR"; then
     echo "Repository cloned successfully."
 else
     echo "Failed to clone the repository." >&2
