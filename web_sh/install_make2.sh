@@ -6,6 +6,10 @@ if [ -z "$TOKEN" ]; then
     exit 1
 fi
 
+BRANCH="${2:-main}"
+
+echo ">>> clone --branch ${BRANCH} ."
+
 REPO_URL="https://MrIbrahem:${TOKEN}@github.com/MrIbrahem/make2.git"
 
 TARGET_DIR="$HOME/www/python/bots/make2"
@@ -27,7 +31,7 @@ cd $HOME || exit
 rm -rf "$CLONE_DIR"
 
 # Clone the repository
-if git clone "$REPO_URL" "$CLONE_DIR"; then
+if git clone --branch "$BRANCH" "$REPO_URL" "$CLONE_DIR"; then
     echo "Repository cloned successfully."
 else
     echo "Failed to clone the repository." >&2
@@ -45,6 +49,7 @@ cp -rf "$CLONE_DIR/"* "$TARGET_DIR/" -v
 # Optional: Set permissions
 # chmod -R 6770 "$TARGET_DIR"
 find "$TARGET_DIR" -type f ! -name "*.pyc" -exec chmod 6770 {} -v \;
+find "$TARGET_DIR" -type f -name "*.pyc" -exec rm -rf {} -v \;
 
 # Optional: Install dependencies
 #"$HOME/local/bin/python3" -m pip install -r "$TARGET_DIR/requirements.in"
