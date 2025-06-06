@@ -59,7 +59,8 @@ def init_db():
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             date_only DATE DEFAULT (DATE('now')),
             UNIQUE(request_data, response_status, date_only)
-        );"""
+        );
+        """
     db_commit(query)
 
     query = """
@@ -73,7 +74,8 @@ def init_db():
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             date_only DATE DEFAULT (DATE('now')),
             UNIQUE(request_data, response_status, date_only)
-        );"""
+        );
+        """
     db_commit(query)
 
 def fetch_all(query, params=[], fetch_one=False):
