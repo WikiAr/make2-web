@@ -4,3 +4,4 @@ src/app copy.py
 *.db
 *.pyc
 *.sql
+/adminer

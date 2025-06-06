@@ -1,6 +1,17 @@
 # -*- coding: utf-8 -*-
 
-from .bot import db_commit, init_db, fetch_all, log_request, count_all, get_logs, get_response_status, sum_response_count, change_db_path
+from .bot import (
+    db_commit,
+    init_db,
+    fetch_all,
+    log_request,
+    count_all,
+    get_logs,
+    get_response_status,
+    sum_response_count,
+    change_db_path,
+    logs_by_day
+)
 
 __all__ = [
     "change_db_path",
@@ -12,4 +23,5 @@ __all__ = [
     "get_logs",
     "count_all",
     "get_response_status",
+    "logs_by_day",
 ]

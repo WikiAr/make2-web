@@ -1,0 +1,85 @@
+{% extends "main.html" %}
+{% block title %}
+<title>API LOGS</title>
+{% endblock %}
+
+{% block content %}
+</div>
+<div class="col-11">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title mb-0 d-flex align-items-center justify-content-center h4">
+                سجلات جدول: {{ tab.table_name }} (<span class="">الإجمالي: {{ tab.sum_all }} </span>)
+            </span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-striped table-hover table-bordered soro">
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>no_result</th>
+                                <th>Category</th>
+                                <th>total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- {"2025-06-06":{"no_result":2,"Category":1,"total":3}} -->
+                            {% for log in logs %}
+                            <tr>
+                                <td>{{ log.day }}</td>
+                                <td>{{ log.no_result }}</td>
+                                <td>{{ log.Category }}</td>
+                                <td>{{ log.total }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--
+<script>
+    const perPageSelect = document.getElementById('per_page');
+    const orderSelect = document.getElementById('order');
+
+    // حفظ الخيارات عند التغيير
+    perPageSelect.addEventListener('change', () => {
+        localStorage.setItem('logs_per_page', perPageSelect.value);
+    });
+
+    orderSelect.addEventListener('change', () => {
+        localStorage.setItem('logs_order', orderSelect.value);
+    });
+
+    // استرجاع القيم عند تحميل الصفحة
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedPerPage = localStorage.getItem('logs_per_page');
+        const savedOrder = localStorage.getItem('logs_order');
+
+        if (savedPerPage && perPageSelect) {
+            perPageSelect.value = savedPerPage;
+        }
+
+        if (savedOrder && orderSelect) {
+            orderSelect.value = savedOrder;
+        }
+    });
+    function applySettings() {
+        const page = 1; // عند تغيير الإعدادات، نبدأ من الصفحة الأولى
+        const perPage = perPageSelect.value;
+        const order = orderSelect.value;
+        const url = new URL(window.location.href);
+        url.searchParams.set("page", page);
+        url.searchParams.set("per_page", perPage);
+        url.searchParams.set("order", order);
+        window.location.href = url.toString();
+    }
+</script>
+-->
+
+{% endblock %}

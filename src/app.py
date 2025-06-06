@@ -2,8 +2,8 @@
 import os
 import sys
 import time
-from flask import Flask, jsonify, render_template, request
-
+from flask import Flask, render_template, request, Response
+import json
 # from flask_cors import CORS
 
 import logs_db
@@ -23,12 +23,22 @@ else:
 # ---
 try:
     from make2 import event
-except:
+except ImportError:
     event = None
 
 app = Flask(__name__)
 # CORS(app)  # ← لتفعيل CORS
 
+def jsonify(data : dict) -> str:
+    response_json = json.dumps(data, ensure_ascii=False, indent=4)
+    return Response(response=response_json, content_type="application/json; charset=utf-8")
+
+@app.route("/api/logs_by_day", methods=["GET"])
+def get_logs_by_day() -> str:
+    result = logs_bot.logs_by_day(request)
+    result = result.get("logs", [])
+    # ---
+    return jsonify(result)
 
 @app.route("/api/<title>", methods=["GET"])
 def get_title(title) -> str:
@@ -57,7 +67,8 @@ def get_title(title) -> str:
     # ---
     # تحديد حالة الاستجابة
     response_status = data.get("result") if data.get("result") else "no_result"
-    logs_db.log_request("/api/<title>", title, response_status, delta)
+    # ---
+    data['sql'] = logs_db.log_request("/api/<title>", title, response_status, delta)
     # ---
     # data["time"] = delta
     # ---
@@ -120,6 +131,19 @@ def view_logs():
     result = logs_bot.view_logs(request)
     # ---
     return render_template("logs.html", logs=result["logs"], order_by_types=result["order_by_types"], tab=result["tab"], status_table=result["status_table"], dbs=result["dbs"])
+
+@app.route("/logs_by_day", methods=["GET"])
+def logs_by_day():
+    # ---
+    result = logs_bot.logs_by_day(request)
+    # ---
+    return render_template(
+        "logs_by_day.html",
+        logs = result.get("logs", []),
+        tab = result.get("tab", []),
+        status_table = result.get("status_table", []),
+        dbs = result.get("dbs", []),
+    )
 
 
 @app.route("/", methods=["GET"])
