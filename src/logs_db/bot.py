@@ -46,7 +46,6 @@ def db_commit(query, params=[]):
         print(f"init_db Database error: {e}")
         return e
 
-
 def init_db():
     # ---
     query = """
@@ -58,10 +57,11 @@ def init_db():
             response_time REAL,
             response_count INTEGER DEFAULT 1,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            date_only DATE DEFAULT (DATE('now')),
             UNIQUE(request_data, response_status)
         );"""
-    # ---
     db_commit(query)
+
     # ---
     query = """
         CREATE TABLE IF NOT EXISTS list_logs (
@@ -72,9 +72,9 @@ def init_db():
             response_time REAL,
             response_count INTEGER DEFAULT 1,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            date_only DATE DEFAULT (DATE('now')),
             UNIQUE(request_data, response_status)
         );"""
-    # ---
     db_commit(query)
 
 
@@ -225,7 +225,7 @@ def get_logs(per_page=10, offset=0, order="DESC", order_by="timestamp", status="
 
 def logs_by_day(table_name="logs"):
     # ---
-    query_by_day = f"SELECT strftime('%Y-%m-%d', timestamp) as day, COUNT(*) as count, response_status FROM {table_name} GROUP BY day"
+    query_by_day = f"SELECT strftime('%Y-%m-%d', timestamp) as day, COUNT(*) as count, response_status, date_only FROM {table_name} GROUP BY day"
     # ---
     result = fetch_all(query_by_day, ())
     # ---
@@ -233,6 +233,21 @@ def logs_by_day(table_name="logs"):
     # ---
     return result
 
+def update_existing_records():
+    db_commit("UPDATE logs SET date_only = DATE(timestamp) WHERE date_only IS NULL")
+    db_commit("UPDATE list_logs SET date_only = DATE(timestamp) WHERE date_only IS NULL")
+
+def update_existing_tables():
+    # إضافة العمود بدون default
+    try:
+        db_commit("ALTER TABLE logs ADD COLUMN date_only DATE")
+    except Exception as e:
+        print(f"تخطي إضافة العمود 'date_only' إلى جدول logs: {e}")
+
+    try:
+        db_commit("ALTER TABLE list_logs ADD COLUMN date_only DATE")
+    except Exception as e:
+        print(f"تخطي إضافة العمود 'date_only' إلى جدول list_logs: {e}")
 
 if __name__ == "__main__":
     # python3 I:/core/bots/ma/web/src/logs_db/bot.py
@@ -240,7 +255,11 @@ if __name__ == "__main__":
     # ---
     print("count_all", count_all(status="no_result"))
     # ---
-    print("get_response_status", get_response_status())
+    # print("get_response_status", get_response_status())
     # ---
     # print("get_logs", get_logs(status=""))
-    print("get_logs", get_logs(status="no_result"))
+    # print("get_logs", get_logs(status="no_result"))
+    # ---
+    update_existing_tables()
+    update_existing_records()
+    # ---
