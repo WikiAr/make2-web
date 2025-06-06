@@ -173,7 +173,7 @@
                         <thead>
                             <tr>
                                 <th>المعرف</th>
-                                <th>API</th>
+                                <!-- <th>API</th> -->
                                 <th>بيانات الطلب</th>
                                 <th>حالة الطلب</th>
                                 <th>مدة الاستجابة</th>
@@ -185,7 +185,7 @@
                             {% for log in logs %}
                             <tr>
                                 <td>{{ log.id }}</td>
-                                <td>{{ log.endpoint }}</td>
+                                <!-- <td>{{ log.endpoint }}</td> -->
                                 <td class="ltr_left">{{ log.request_data }}</td>
                                 <td>{{ log.response_status }}</td>
                                 <td>{{ log.response_time }}</td>

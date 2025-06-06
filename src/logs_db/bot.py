@@ -122,8 +122,6 @@ def log_request(endpoint, request_data, response_status, response_time):
     # ---
     response_status = str(response_status)
     # ---
-    response_status = str(response_status)
-    # ---
     table_name = "logs" if endpoint != "/api/list" else "list_logs"
     # ---
     result = db_commit(

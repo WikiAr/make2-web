@@ -23,7 +23,7 @@ else:
 # ---
 try:
     from make2 import event
-except:
+except ImportError:
     event = None
 
 app = Flask(__name__)
@@ -57,7 +57,8 @@ def get_title(title) -> str:
     # ---
     # تحديد حالة الاستجابة
     response_status = data.get("result") if data.get("result") else "no_result"
-    logs_db.log_request("/api/<title>", title, response_status, delta)
+    # ---
+    data['sql'] = logs_db.log_request("/api/<title>", title, response_status, delta)
     # ---
     # data["time"] = delta
     # ---
