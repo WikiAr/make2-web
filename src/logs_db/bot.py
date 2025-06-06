@@ -47,7 +47,6 @@ def db_commit(query, params=[]):
         return e
 
 def init_db():
-    # ---
     query = """
         CREATE TABLE IF NOT EXISTS logs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -62,7 +61,6 @@ def init_db():
         );"""
     db_commit(query)
 
-    # ---
     query = """
         CREATE TABLE IF NOT EXISTS list_logs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -76,7 +74,6 @@ def init_db():
             UNIQUE(request_data, response_status)
         );"""
     db_commit(query)
-
 
 def fetch_all(query, params=[], fetch_one=False):
     try:
@@ -225,11 +222,20 @@ def get_logs(per_page=10, offset=0, order="DESC", order_by="timestamp", status="
 
 def logs_by_day(table_name="logs"):
     # ---
-    query_by_day = f"SELECT strftime('%Y-%m-%d', timestamp) as day, COUNT(*) as count, response_status, date_only FROM {table_name} GROUP BY day"
+    query_by_day = """
+        SELECT
+            date_only,
+            CASE
+                WHEN response_status LIKE 'تصنيف%' THEN 'تصنيف'
+                ELSE response_status
+            END AS status_group,
+            COUNT(*) AS count
+        FROM {table_name}
+        GROUP BY date_only, status_group
+        ORDER BY date_only;
+        """.format(table_name=table_name)
     # ---
     result = fetch_all(query_by_day, ())
-    # ---
-    # result = [row['response_status'] for row in result]
     # ---
     return result
 
@@ -260,6 +266,6 @@ if __name__ == "__main__":
     # print("get_logs", get_logs(status=""))
     # print("get_logs", get_logs(status="no_result"))
     # ---
-    update_existing_tables()
+    # update_existing_tables()
     update_existing_records()
     # ---

@@ -2,8 +2,8 @@
 import os
 import sys
 import time
-from flask import Flask, jsonify, render_template, request
-
+from flask import Flask, render_template, request, Response
+import json
 # from flask_cors import CORS
 
 import logs_db
@@ -29,12 +29,13 @@ except ImportError:
 app = Flask(__name__)
 # CORS(app)  # ← لتفعيل CORS
 
+def jsonify(data : dict) -> str:
+    response_json = json.dumps(data, ensure_ascii=False, indent=4)
+    return Response(response=response_json, content_type="application/json; charset=utf-8")
 
 @app.route("/api/logs_by_day", methods=["GET"])
 def get_logs_by_day() -> str:
-    # ---
     result = logs_bot.logs_by_day(request)
-    # ---
     return jsonify(result)
 
 @app.route("/api/<title>", methods=["GET"])
