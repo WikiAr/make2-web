@@ -126,3 +126,23 @@ def view_logs(request):
     }
     # ---
     return result
+
+def logs_by_day(request):
+    # ---
+    db_path = request.args.get("db_path")
+    # ---
+    dbs = []
+    # ---
+    if db_path:
+        dbs = logs_db.change_db_path(db_path)
+        # ---
+        db_path = db_path if db_path in dbs else "new_logs.db"
+    # ---
+    table_name = request.args.get("table_name", "")
+    # ---
+    if table_name not in db_tables:
+        table_name = "logs"
+    # ---
+    logs = logs_db.logs_by_day(table_name=table_name)
+    # ---
+    return logs

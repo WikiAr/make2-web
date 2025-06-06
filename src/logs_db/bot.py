@@ -49,42 +49,31 @@ def db_commit(query, params=[]):
 
 def init_db():
     # ---
-    query_x = """
-    CREATE TABLE IF NOT EXISTS logs (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        endpoint TEXT NOT NULL,
-        request_data TEXT,
-        response_status TEXT NOT NULL,
-        response_time REAL,
-        response_count INTEGER DEFAULT 1,
-        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-    )"""
-    # ---
     query = """
-    CREATE TABLE IF NOT EXISTS logs (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        endpoint TEXT NOT NULL,
-        request_data TEXT NOT NULL,
-        response_status TEXT NOT NULL,
-        response_time REAL,
-        response_count INTEGER DEFAULT 1,
-        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(request_data, response_status)
-    );"""
+        CREATE TABLE IF NOT EXISTS logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            endpoint TEXT NOT NULL,
+            request_data TEXT NOT NULL,
+            response_status TEXT NOT NULL,
+            response_time REAL,
+            response_count INTEGER DEFAULT 1,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(request_data, response_status)
+        );"""
     # ---
     db_commit(query)
     # ---
     query = """
-    CREATE TABLE IF NOT EXISTS list_logs (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        endpoint TEXT NOT NULL,
-        request_data TEXT NOT NULL,
-        response_status TEXT NOT NULL,
-        response_time REAL,
-        response_count INTEGER DEFAULT 1,
-        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(request_data, response_status)
-    );"""
+        CREATE TABLE IF NOT EXISTS list_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            endpoint TEXT NOT NULL,
+            request_data TEXT NOT NULL,
+            response_status TEXT NOT NULL,
+            response_time REAL,
+            response_count INTEGER DEFAULT 1,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(request_data, response_status)
+        );"""
     # ---
     db_commit(query)
 
@@ -233,6 +222,16 @@ def get_logs(per_page=10, offset=0, order="DESC", order_by="timestamp", status="
     logs = fetch_all(query, params)
     # ---
     return logs
+
+def logs_by_day(table_name="logs"):
+    # ---
+    query_by_day = f"SELECT strftime('%Y-%m-%d', timestamp) as day, COUNT(*) as count, response_status FROM {table_name} GROUP BY day"
+    # ---
+    result = fetch_all(query_by_day, ())
+    # ---
+    # result = [row['response_status'] for row in result]
+    # ---
+    return result
 
 
 if __name__ == "__main__":
