@@ -145,4 +145,37 @@ def logs_by_day(request):
     # ---
     logs = logs_db.logs_by_day(table_name=table_name)
     # ---
-    return logs
+    data_logs = {}
+    # ---
+    # [ { "date_only": "2025-06-06", "status_group": "no_result", "count": 2 }, { "date_only": "2025-06-06", "status_group": "Category", "count": 1 } ]
+    # ---
+    for x in logs:
+        day = x["date_only"]
+        # ---
+        data_logs.setdefault(day, {"no_result": 0, "Category": 0})
+        # ---
+        data_logs[day][x["status_group"]] = x["count"]
+    # ---
+    logs = []
+    # ---
+    sum_all = 0
+    # ---
+    for day, results_keys in data_logs.items():
+        results_keys["total"] = sum(results_keys.values())
+        sum_all += results_keys["total"]
+        results_keys["day"] = day
+        logs.append(results_keys)
+    # ---
+    data = {
+        "dbs": dbs,
+        "logs": logs,
+        "tab": {
+            "sum_all": f"{sum_all:,}",
+            "db_path": db_path,
+            "table_name": table_name,
+            # "order": order,
+            # "order_by": order_by,
+        }
+    }
+    # ---
+    return data

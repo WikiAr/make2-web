@@ -36,6 +36,8 @@ def jsonify(data : dict) -> str:
 @app.route("/api/logs_by_day", methods=["GET"])
 def get_logs_by_day() -> str:
     result = logs_bot.logs_by_day(request)
+    result = result.get("logs", [])
+    # ---
     return jsonify(result)
 
 @app.route("/api/<title>", methods=["GET"])
@@ -135,7 +137,13 @@ def logs_by_day():
     # ---
     result = logs_bot.logs_by_day(request)
     # ---
-    return render_template("logs_by_day.html", logs=result["logs"], order_by_types=result["order_by_types"], tab=result["tab"], status_table=result["status_table"], dbs=result["dbs"])
+    return render_template(
+        "logs_by_day.html",
+        logs = result.get("logs", []),
+        tab = result.get("tab", []),
+        status_table = result.get("status_table", []),
+        dbs = result.get("dbs", []),
+    )
 
 
 @app.route("/", methods=["GET"])

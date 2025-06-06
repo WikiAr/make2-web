@@ -1,106 +1,20 @@
 # -*- coding: utf-8 -*-
+"""
+
+from .logs_db.bot import change_db_path, db_commit, init_db, fetch_all
+
+"""
 import os
-# import sys
-# import json
 import sqlite3
 from pathlib import Path
 
-HOME = os.getenv("HOME")
-
-main_path = Path(__file__).parent.parent.parent
-# ---
-if HOME:
-    main_path = HOME + "/www/python/dbs"
-# ---
-db_path = f"{str(main_path)}/new_logs.db"
-
-db_path_main = {1: str(db_path)}
-
-print("db_path", db_path_main[1])
-
+try:
+    from .db import change_db_path as _change_db_path, db_commit, init_db, fetch_all
+except ImportError:
+    from db import change_db_path as _change_db_path, db_commit, init_db, fetch_all
 
 def change_db_path(file):
-    # ---
-    db_path = str(main_path) + f"/{file}"
-    # ---
-    dbs_path = Path(main_path)
-    # ---
-    # list of files *.db in dbs_path
-    dbs = [str(f.name) for f in dbs_path.glob("*.db") if f.is_file()]
-    # ---
-    if file in dbs and os.path.exists(db_path):
-        db_path_main[1] = str(db_path)
-    # ---
-    return dbs
-
-
-def db_commit(query, params=[]):
-    try:
-        with sqlite3.connect(db_path_main[1]) as conn:
-            cursor = conn.cursor()
-            cursor.execute(query, params)
-        conn.commit()
-        return True
-
-    except sqlite3.Error as e:
-        print(f"init_db Database error: {e}")
-        return e
-
-def init_db():
-    query = """
-        CREATE TABLE IF NOT EXISTS logs (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            endpoint TEXT NOT NULL,
-            request_data TEXT NOT NULL,
-            response_status TEXT NOT NULL,
-            response_time REAL,
-            response_count INTEGER DEFAULT 1,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            date_only DATE DEFAULT (DATE('now')),
-            UNIQUE(request_data, response_status)
-        );"""
-    db_commit(query)
-
-    query = """
-        CREATE TABLE IF NOT EXISTS list_logs (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            endpoint TEXT NOT NULL,
-            request_data TEXT NOT NULL,
-            response_status TEXT NOT NULL,
-            response_time REAL,
-            response_count INTEGER DEFAULT 1,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            date_only DATE DEFAULT (DATE('now')),
-            UNIQUE(request_data, response_status)
-        );"""
-    db_commit(query)
-
-def fetch_all(query, params=[], fetch_one=False):
-    try:
-        with sqlite3.connect(db_path_main[1]) as conn:
-            # Set row factory to return rows as dictionaries
-            conn.row_factory = sqlite3.Row
-            cursor = conn.cursor()
-
-            # Execute the query
-            cursor.execute(query, params)
-
-            # Fetch results
-            if fetch_one:
-                row = cursor.fetchone()
-                logs = dict(row) if row else None  # Convert to dictionary
-            else:
-                rows = cursor.fetchall()
-                logs = [dict(row) for row in rows]  # Convert all rows to dictionaries
-
-    except sqlite3.Error as e:
-        print(f"Database error in view_logs: {e}")
-        if "no such table" in str(e):
-            init_db()
-        logs = []
-
-    return logs
-
+    return _change_db_path(file)
 
 def log_request(endpoint, request_data, response_status, response_time):
     # ---
@@ -112,9 +26,11 @@ def log_request(endpoint, request_data, response_status, response_time):
     # ---
     result = db_commit(
         f"""
-        INSERT INTO {table_name} (endpoint, request_data, response_status, response_time)
-        VALUES (?, ?, ?, ?)
-        ON CONFLICT(request_data, response_status) DO UPDATE SET
+        INSERT INTO {table_name} (
+            endpoint, request_data, response_status, response_time, date_only
+            )
+        VALUES (?, ?, ?, ?, DATE('now'))
+        ON CONFLICT(request_data, response_status, date_only) DO UPDATE SET
             response_count = response_count + 1,
             response_time = excluded.response_time,
             timestamp = CURRENT_TIMESTAMP
@@ -226,7 +142,7 @@ def logs_by_day(table_name="logs"):
         SELECT
             date_only,
             CASE
-                WHEN response_status LIKE 'تصنيف%' THEN 'تصنيف'
+                WHEN response_status LIKE 'تصنيف%' THEN 'Category'
                 ELSE response_status
             END AS status_group,
             COUNT(*) AS count
@@ -238,34 +154,3 @@ def logs_by_day(table_name="logs"):
     result = fetch_all(query_by_day, ())
     # ---
     return result
-
-def update_existing_records():
-    db_commit("UPDATE logs SET date_only = DATE(timestamp) WHERE date_only IS NULL")
-    db_commit("UPDATE list_logs SET date_only = DATE(timestamp) WHERE date_only IS NULL")
-
-def update_existing_tables():
-    # إضافة العمود بدون default
-    try:
-        db_commit("ALTER TABLE logs ADD COLUMN date_only DATE")
-    except Exception as e:
-        print(f"تخطي إضافة العمود 'date_only' إلى جدول logs: {e}")
-
-    try:
-        db_commit("ALTER TABLE list_logs ADD COLUMN date_only DATE")
-    except Exception as e:
-        print(f"تخطي إضافة العمود 'date_only' إلى جدول list_logs: {e}")
-
-if __name__ == "__main__":
-    # python3 I:/core/bots/ma/web/src/logs_db/bot.py
-    init_db()
-    # ---
-    print("count_all", count_all(status="no_result"))
-    # ---
-    # print("get_response_status", get_response_status())
-    # ---
-    # print("get_logs", get_logs(status=""))
-    # print("get_logs", get_logs(status="no_result"))
-    # ---
-    # update_existing_tables()
-    update_existing_records()
-    # ---
