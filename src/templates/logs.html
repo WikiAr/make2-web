@@ -1,4 +1,4 @@
-{% extends "main.html" %}
+{% extends "ltr.html" %}
 {% block title %}
 <title>API LOGS</title>
 {% endblock %}
@@ -15,7 +15,7 @@
 {% set col_class = "col-md-4" %}
 
 {% if dbs %}
-    {% set col_class = "col-md-3" %}
+{% set col_class = "col-md-3" %}
 {% endif %}
 
 {% block content %}
@@ -24,20 +24,19 @@
     <div class="card">
         <div class="card-header">
             <span class="card-title mb-0 d-flex align-items-center justify-content-center h4">
-                سجلات {{ tab.table_name }} (<span class="">{{ tab.sum_all }} طلب</span>)
+                Table: {{ tab.table_name }} (<span class="">{{ tab.sum_all }} Requests</span>)
             </span>
         </div>
         <div class="card-body">
             <!-- Filter Form -->
             <form method="get" action="{{ url_for('view_logs') }}" class="form-inline mb-3 gap-2">
                 <input type="text" name="table_name" value="{{ tab.table_name }}" hidden />
-                <!-- d-flex justify-content-center align-items-center -->
                 <div class="row">
                     <div class="col-md-4">
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="per_page" class="form-label">NUMB</label>
+                                    <label for="per_page" class="form-label">Per Page</label>
                                     <select name="per_page" id="per_page" class="form-select w-100">
                                         {% for n in [10, 20, 50, 100, 150, 200] %}
                                         <option value="{{ n }}" {% if tab.per_page == n %}selected{% endif %}>{{ n }}
@@ -48,7 +47,7 @@
                             </div>
                             <div class="col-md-5">
                                 <div class="form-group">
-                                    <label for="order_by" class="form-label">SORT</label>
+                                    <label for="order_by" class="form-label">Sort By</label>
                                     <select name="order_by" id="order_by" class="form-select w-100">
                                         {% for order_type in order_by_types %}
                                         <option value="{{ order_type }}"
@@ -59,7 +58,7 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <label for="order" class="input-label">ORDER</label>
+                                <label for="order" class="input-label">Order</label>
                                 <div class="input-group">
                                     <div class="form-control d-flex flex-column">
                                         <div class="form-check form-check-inline">
@@ -68,7 +67,7 @@
                                             <label class="form-check-label" for="desc">DESC</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="order" id="asct"
+                                            <input class="form-check-input" type="radio" name="order" id="asc"
                                                 value="ASC" {% if tab.order == 'ASC' %}checked{% endif %}>
                                             <label class="form-check-label" for="asc">ASC</label>
                                         </div>
@@ -94,7 +93,7 @@
                                 <div class="form-group">
                                     <label for="like" class="form-label">Like:</label>
                                     <input type="text" name="like" id="like" class="form-control" value="{{ tab.like }}"
-                                        placeholder="%أفلام%">
+                                        placeholder="%movie%">
                                 </div>
                             </div>
                             <div class="{{ col_class }}">
@@ -107,7 +106,7 @@
                             {% if dbs %}
                             <div class="{{ col_class }}">
                                 <div class="form-group">
-                                    <label for="db_path" class="form-label">DB</label>
+                                    <label for="db_path" class="form-label">Database</label>
                                     <select name="db_path" id="db_path" class="form-select w-100">
                                         {% for db in dbs %}
                                         <option value="{{ db }}" {% if tab.db_path == db %}selected{% endif %}>
@@ -120,7 +119,7 @@
                         </div>
                     </div>
                     <div class="col-md-1">
-                        <button class="btn btn-primary ms-3" type="submit" onclick1="applySettings()">تطبيق</button>
+                        <button class="btn btn-primary ms-3" type="submit" onclick1="applySettings()">Apply</button>
                     </div>
                 </div>
             </form>
@@ -176,8 +175,8 @@
 
                 <!-- Page info -->
                 <div class="col-12 text-center text-muted">
-                    <small>صفحة {{ tab.page }} من {{ tab.total_pages }}
-                        ({{ tab.start_log }} - {{ tab.end_log }} من إجمالي {{ tab.total_logs }} سجل)</small>
+                    <small>Page {{ tab.page }} of {{ tab.total_pages }}
+                        ({{ tab.start_log }} - {{ tab.end_log }} out of {{ tab.total_logs }} records)</small>
                 </div>
             </div>
             <div class="row">
@@ -185,14 +184,14 @@
                     <table class="table table-striped table-hover table-bordered soro">
                         <thead>
                             <tr>
-                                <th>المعرف</th>
+                                <th>ID</th>
                                 <!-- <th>API</th> -->
-                                <th>بيانات الطلب</th>
-                                <th>حالة الطلب</th>
-                                <th>مدة الاستجابة</th>
-                                <th>عدد الطلبات</th>
-                                <th>آخر طلب</th>
-                                <th>اليوم</th>
+                                <th>Request Data</th>
+                                <th>Status</th>
+                                <th>Response Time</th>
+                                <th>Count</th>
+                                <th>Last Request</th>
+                                <th>Date</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -216,6 +215,7 @@
         </div>
     </div>
 </div>
+
 <!--
 <script>
     const perPageSelect = document.getElementById('per_page');
@@ -255,5 +255,4 @@
     }
 </script>
 -->
-
 {% endblock %}

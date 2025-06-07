@@ -1,4 +1,4 @@
-{% extends "main.html" %}
+{% extends "ltr.html" %}
 {% block title %}
 <title>API LOGS</title>
 {% endblock %}
@@ -9,7 +9,7 @@
     <div class="card">
         <div class="card-header">
             <span class="card-title mb-0 d-flex align-items-center justify-content-center h4">
-                سجلات جدول: {{ tab.table_name }} (<span class="">الإجمالي: {{ tab.sum_all }} </span>)
+                Table Logs: {{ tab.table_name }} (<span class="">Total: {{ tab.sum_all }} </span>)
             </span>
         </div>
         <div class="card-body">
@@ -19,10 +19,10 @@
                         <thead>
                             <tr>
                                 <th>Day</th>
-                                <th>title_count</th>
-                                <th>no_result</th>
+                                <th>Title Count</th>
+                                <th>No Result</th>
                                 <th>Category</th>
-                                <th>total</th>
+                                <th>Total</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -49,7 +49,7 @@
     const perPageSelect = document.getElementById('per_page');
     const orderSelect = document.getElementById('order');
 
-    // حفظ الخيارات عند التغيير
+    // Save options on change
     perPageSelect.addEventListener('change', () => {
         localStorage.setItem('logs_per_page', perPageSelect.value);
     });
@@ -58,7 +58,7 @@
         localStorage.setItem('logs_order', orderSelect.value);
     });
 
-    // استرجاع القيم عند تحميل الصفحة
+    // Restore values on page load
     window.addEventListener('DOMContentLoaded', () => {
         const savedPerPage = localStorage.getItem('logs_per_page');
         const savedOrder = localStorage.getItem('logs_order');
@@ -72,7 +72,7 @@
         }
     });
     function applySettings() {
-        const page = 1; // عند تغيير الإعدادات، نبدأ من الصفحة الأولى
+        const page = 1; // Start from the first page when settings change
         const perPage = perPageSelect.value;
         const order = orderSelect.value;
         const url = new URL(window.location.href);
