@@ -155,6 +155,13 @@ def main() -> str:
 def titles() -> str:
     return render_template("list.html")
 
+@app.route("/chart", methods=["GET"])
+def charts() -> str:
+    return render_template("chart.html")
+
+@app.route("/x", methods=["GET"])
+def charts2() -> str:
+    return render_template("x.html")
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -170,5 +177,9 @@ if __name__ == "__main__":
     logs_db.init_db()
     # ---
     debug = "debug" in sys.argv
+    # ---
+    if debug:
+        url = "http://localhost:3000/core/bots/ma/web/adminer/index.php?sqlite=&username=xxx&db=..%2Fnew_logs.db"
+        print("Adminer:", url)
     # ---
     app.run(debug=debug)

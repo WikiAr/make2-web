@@ -1,0 +1,79 @@
+{% extends "main.html" %}
+
+{% block title %}
+<title>Chart</title>
+{% endblock %}
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div class="card card_form">
+    <div class="card-header text-center py-2">
+        <h4 class="card-title mb-0 d-flex align-items-center justify-content-center">
+            Logs Charts
+        </h4>
+    </div>
+    <div class="card-body p-3">
+        <canvas id="logsChart" width="600" height="300"></canvas>
+
+        <script>
+            fetch('/api/logs_by_day')
+                .then(response => response.json())
+                .then(data => {
+                    const labels = data.map(item => item.day);
+                    const titleCounts = data.map(item => item.title_count);
+                    const categoryCounts = data.map(item => item.results.Category || 0);
+                    const NoResultCounts = data.map(item => item.results.no_result || 0);
+
+                    const ctx = document.getElementById('logsChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Title Count',
+                                    data: titleCounts,
+                                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                                    borderColor: 'rgba(54, 162, 235, 1)',
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: 'Category',
+                                    data: categoryCounts,
+                                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                                    borderColor: 'rgba(255, 99, 132, 1)',
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: 'No Result',
+                                    data: NoResultCounts,
+                                    backgroundColor: 'rgba(255, 206, 86, 0.6)',  // أصفر ذهبي فاتح
+                                    borderColor: 'rgba(255, 206, 86, 1)',
+                                    borderWidth: 1
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Number'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Day'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
+        </script>
+    </div>
+
+</div>
+{% endblock %}

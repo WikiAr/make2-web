@@ -23,6 +23,8 @@ def view_logs(request):
     order = request.args.get("order", "desc").upper()
     order_by = request.args.get("order_by", "response_count")
     # ---
+    day = request.args.get("day", "")
+    # ---
     status = request.args.get("status", "")
     like = request.args.get("like", "")
     # ---
@@ -46,6 +48,7 @@ def view_logs(request):
         "response_time",
         "response_count",
         "timestamp",
+        "date_only",
     ]
     # ---
     if order_by not in order_by_types:
@@ -56,7 +59,7 @@ def view_logs(request):
     # ---
     status = status if (status in status_table or status == "Category") else ""
     # ---
-    logs = logs_db.get_logs(per_page, offset, order, order_by=order_by, status=status, table_name=table_name, like=like)
+    logs = logs_db.get_logs(per_page, offset, order, order_by=order_by, status=status, table_name=table_name, like=like, day=day)
     # ---
     # Convert to list of dicts
     log_list = []
@@ -66,6 +69,9 @@ def view_logs(request):
         # ---
         request_data = log["request_data"].replace("_", ' ')
         # ---
+        # 2025-04-23 21:13:18
+        timestamp = log["timestamp"].split(" ")[1]
+        # ---
         log_list.append(
             {
                 "id": log["id"],
@@ -73,8 +79,9 @@ def view_logs(request):
                 "request_data": request_data,
                 "response_status": log["response_status"],
                 "response_time": log["response_time"],
-                "timestamp": log["timestamp"],
                 "response_count": log["response_count"],
+                "timestamp": timestamp,
+                "date_only": log["date_only"],
             }
         )
     # ---
@@ -109,6 +116,7 @@ def view_logs(request):
         "page": page,
         "status": status,
         "like": like,
+        "day": day,
     }
     # ---
     if "All" not in status_table:
@@ -143,31 +151,39 @@ def logs_by_day(request):
     if table_name not in db_tables:
         table_name = "logs"
     # ---
-    logs = logs_db.logs_by_day(table_name=table_name)
+    logs_data = logs_db.logs_by_day(table_name=table_name)
     # ---
     data_logs = {}
     # ---
     # [ { "date_only": "2025-06-06", "status_group": "no_result", "count": 2 }, { "date_only": "2025-06-06", "status_group": "Category", "count": 1 } ]
     # ---
-    for x in logs:
+    for x in logs_data:
         day = x["date_only"]
         # ---
-        data_logs.setdefault(day, {"no_result": 0, "Category": 0})
+        data_logs.setdefault(day, {"day":day, "title_count":0 , "results": {"no_result": 0, "Category": 0}})
         # ---
-        data_logs[day][x["status_group"]] = x["count"]
+        data_logs[day]["title_count"] += x["title_count"]
+        # ---
+        data_logs[day]["results"][x["status_group"]] = x["count"]
     # ---
     logs = []
     # ---
     sum_all = 0
     # ---
     for day, results_keys in data_logs.items():
-        results_keys["total"] = sum(results_keys.values())
-        sum_all += results_keys["total"]
-        results_keys["day"] = day
+        total = sum(results_keys["results"].values())
+        sum_all += total
+        # ---
+        results_keys["total"] = total
+        # ---
         logs.append(results_keys)
+    # ---
+    # sort logs by total
+    logs.sort(key=lambda x: x["total"], reverse=True)
     # ---
     data = {
         "dbs": dbs,
+        "logs_data": logs_data,
         "logs": logs,
         "tab": {
             "sum_all": f"{sum_all:,}",
