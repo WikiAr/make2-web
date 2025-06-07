@@ -179,7 +179,7 @@ if __name__ == "__main__":
     debug = "debug" in sys.argv
     # ---
     if debug:
-        url = "http://localhost:3000/core/bots/ma/web/adminer/sqlite.php?sqlite=&username=xxx&db=..%2Fnew_logs.db"
+        url = "http://localhost:3000/core/bots/ma/web/adminer/index.php?sqlite=&username=xxx&db=..%2Fnew_logs.db"
         print("Adminer:", url)
     # ---
     app.run(debug=debug)
