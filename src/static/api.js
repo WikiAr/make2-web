@@ -16,7 +16,7 @@ $(document).ready(function () {
 
         const category = $.trim($categoryInput.val());
         if (!category) {
-            $categoryInput.attr("placeholder", "يرجى إدخال العنوان");
+            $categoryInput.attr("placeholder", "Insert Category");
             $categoryInput.addClass("alert-danger");
             return;
         }
@@ -44,7 +44,7 @@ $(document).ready(function () {
                 }
                 // ---
                 if (data.result == "") {
-                    $resultInput.attr("placeholder", "لا يوجد نتيجة");
+                    $resultInput.attr("placeholder", "no result");
                     $resultInput.addClass("alert-danger");
                 } else {
                     $resultInput.val(data.result);
@@ -55,10 +55,10 @@ $(document).ready(function () {
                 // ---
                 var timeend = new Date().getTime();
                 var time = (timeend - timestart) / 1000;
-                $("#time").text("(" + time.toFixed(2) + " ثانية)");
+                $("#time").text("(" + time.toFixed(2) + " s)");
             },
             error: function (xhr, status, error) {
-                $resultInput.val("فشل في جلب البيانات");
+                $resultInput.val("Cannot get data");
                 $resultInput.addClass("alert-danger");
                 console.error("Error:", error);
             },

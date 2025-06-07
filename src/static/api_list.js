@@ -51,13 +51,13 @@ async function sendCategories() {
         $("#no_labs").text(no_labs);
         $("#no_labs").show();
         // ---
-        $("#time").text(time.toFixed(2) + " ثانية");
+        $("#time").text(time.toFixed(2) + " s");
         $("#time").show();
         // ---
         resultBox.textContent = JSON.stringify(data.results, null, 2);
         // ---
     } catch (error) {
-        resultBox.textContent = "حدث خطأ أثناء الاتصال بالخادم.";
+        resultBox.textContent = "An error occurred while connecting to the server.";
         console.error(error);
     } finally {
         loading.style.display = 'none';
