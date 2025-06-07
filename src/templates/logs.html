@@ -8,8 +8,15 @@
     'order': tab.order,
     'like': tab.like,
     'table_name': tab.table_name,
-    'status': tab.status
+    'status': tab.status,
+    'day': tab.day
 } %}
+
+{% set col_class = "col-md-4" %}
+
+{% if dbs %}
+    {% set col_class = "col-md-3" %}
+{% endif %}
 
 {% block content %}
 </div>
@@ -26,9 +33,9 @@
                 <input type="text" name="table_name" value="{{ tab.table_name }}" hidden />
                 <!-- d-flex justify-content-center align-items-center -->
                 <div class="row">
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="per_page" class="form-label">NUMB</label>
                                     <select name="per_page" id="per_page" class="form-select w-100">
@@ -39,7 +46,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-5">
                                 <div class="form-group">
                                     <label for="order_by" class="form-label">SORT</label>
                                     <select name="order_by" id="order_by" class="form-select w-100">
@@ -72,7 +79,7 @@
                     </div>
                     <div class="col-md-7">
                         <div class="row">
-                            <div class="col-auto">
+                            <div class="{{ col_class }}">
                                 <div class="form-group">
                                     <label for="status" class="form-label">Result</label>
                                     <select name="status" id="status" class="form-select w-100">
@@ -83,15 +90,22 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-auto">
+                            <div class="{{ col_class }}">
                                 <div class="form-group">
                                     <label for="like" class="form-label">Like:</label>
                                     <input type="text" name="like" id="like" class="form-control" value="{{ tab.like }}"
                                         placeholder="%أفلام%">
                                 </div>
                             </div>
+                            <div class="{{ col_class }}">
+                                <div class="form-group">
+                                    <label for="like" class="form-label">Day:</label>
+                                    <input type="text" name="day" id="day" class="form-control" value="{{ tab.day }}"
+                                        placeholder="2025-01-01">
+                                </div>
+                            </div>
                             {% if dbs %}
-                            <div class="col-auto">
+                            <div class="{{ col_class }}">
                                 <div class="form-group">
                                     <label for="db_path" class="form-label">DB</label>
                                     <select name="db_path" id="db_path" class="form-select w-100">
@@ -103,11 +117,10 @@
                                 </div>
                             </div>
                             {% endif %}
-                            <div class="col-auto">
-                                <button class="btn btn-primary ms-3" type="submit"
-                                    onclick1="applySettings()">تطبيق</button>
-                            </div>
                         </div>
+                    </div>
+                    <div class="col-md-1">
+                        <button class="btn btn-primary ms-3" type="submit" onclick1="applySettings()">تطبيق</button>
                     </div>
                 </div>
             </form>
@@ -177,8 +190,9 @@
                                 <th>بيانات الطلب</th>
                                 <th>حالة الطلب</th>
                                 <th>مدة الاستجابة</th>
-                                <th>آخر طلب</th>
                                 <th>عدد الطلبات</th>
+                                <th>آخر طلب</th>
+                                <th>اليوم</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -189,8 +203,9 @@
                                 <td class="ltr_left">{{ log.request_data }}</td>
                                 <td>{{ log.response_status }}</td>
                                 <td>{{ log.response_time }}</td>
-                                <td>{{ log.timestamp }}</td>
                                 <td>{{ log.response_count }}</td>
+                                <td>{{ log.timestamp }}</td>
+                                <td>{{ log.date_only }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>

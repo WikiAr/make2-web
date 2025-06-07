@@ -5,6 +5,7 @@ from .logs_db.bot import change_db_path, db_commit, init_db, fetch_all
 
 """
 import os
+import re
 import sqlite3
 from pathlib import Path
 
@@ -46,20 +47,32 @@ def log_request(endpoint, request_data, response_status, response_time):
     return result
 
 
-def add_status(query, params, status="", like=""):
+def add_status(query, params, status="", like="", day=""):
     # ---
     if not isinstance(params, list):
         params = list(params)
     # ---
+    added = []
+    # ---
     if status:
         if status == "Category":
-            query += " WHERE response_status like 'تصنيف%'"
+            added.append("response_status like 'تصنيف%'")
         else:
-            query += " WHERE response_status = ?"
+            added.append("response_status = ?")
             params.append(status)
     elif like:
-        query += " WHERE response_status like ?"
+        added.append("response_status like ?")
         params.append(like)
+    # ---
+    # 2025-04-23
+    pattern = r"\d{4}-\d{2}-\d{2}"
+    # ---
+    if day and re.match(pattern, day):
+        added.append("date_only = ?")
+        params.append(day)
+    # ---
+    if added:
+        query += " WHERE " + " AND ".join(added)
     # ---
     # params = tuple(params)
     # ---
@@ -115,7 +128,7 @@ def count_all(status="", table_name="logs", like=""):
     return total_logs
 
 
-def get_logs(per_page=10, offset=0, order="DESC", order_by="timestamp", status="", table_name="logs", like=""):
+def get_logs(per_page=10, offset=0, order="DESC", order_by="timestamp", status="", table_name="logs", like="", day=""):
     # ---
     if order not in ["ASC", "DESC"]:
         order = "DESC"
@@ -124,7 +137,7 @@ def get_logs(per_page=10, offset=0, order="DESC", order_by="timestamp", status="
     # ---
     params = []
     # ---
-    query, params = add_status(query, params, status=status, like=like)
+    query, params = add_status(query, params, status=status, like=like, day=day)
     # ---
     query += f"ORDER BY {order_by} {order} LIMIT ? OFFSET ?"
     # ---

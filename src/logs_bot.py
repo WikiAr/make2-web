@@ -23,6 +23,8 @@ def view_logs(request):
     order = request.args.get("order", "desc").upper()
     order_by = request.args.get("order_by", "response_count")
     # ---
+    day = request.args.get("day", "")
+    # ---
     status = request.args.get("status", "")
     like = request.args.get("like", "")
     # ---
@@ -46,6 +48,7 @@ def view_logs(request):
         "response_time",
         "response_count",
         "timestamp",
+        "date_only",
     ]
     # ---
     if order_by not in order_by_types:
@@ -56,7 +59,7 @@ def view_logs(request):
     # ---
     status = status if (status in status_table or status == "Category") else ""
     # ---
-    logs = logs_db.get_logs(per_page, offset, order, order_by=order_by, status=status, table_name=table_name, like=like)
+    logs = logs_db.get_logs(per_page, offset, order, order_by=order_by, status=status, table_name=table_name, like=like, day=day)
     # ---
     # Convert to list of dicts
     log_list = []
@@ -66,6 +69,9 @@ def view_logs(request):
         # ---
         request_data = log["request_data"].replace("_", ' ')
         # ---
+        # 2025-04-23 21:13:18
+        timestamp = log["timestamp"].split(" ")[1]
+        # ---
         log_list.append(
             {
                 "id": log["id"],
@@ -73,8 +79,9 @@ def view_logs(request):
                 "request_data": request_data,
                 "response_status": log["response_status"],
                 "response_time": log["response_time"],
-                "timestamp": log["timestamp"],
                 "response_count": log["response_count"],
+                "timestamp": timestamp,
+                "date_only": log["date_only"],
             }
         )
     # ---
@@ -109,6 +116,7 @@ def view_logs(request):
         "page": page,
         "status": status,
         "like": like,
+        "day": day,
     }
     # ---
     if "All" not in status_table:
@@ -169,6 +177,9 @@ def logs_by_day(request):
         results_keys["total"] = total
         # ---
         logs.append(results_keys)
+    # ---
+    # sort logs by total
+    logs.sort(key=lambda x: x["total"], reverse=True)
     # ---
     data = {
         "dbs": dbs,
