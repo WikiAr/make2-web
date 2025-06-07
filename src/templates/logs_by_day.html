@@ -19,18 +19,20 @@
                         <thead>
                             <tr>
                                 <th>Day</th>
+                                <th>title_count</th>
                                 <th>no_result</th>
                                 <th>Category</th>
                                 <th>total</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- {"2025-06-06":{"no_result":2,"Category":1,"total":3}} -->
+                            <!-- {"day":"2024-01-01","title_count":2,"results":{"no_result":0,"Category":10000,"total":10000}} -->
                             {% for log in logs %}
                             <tr>
                                 <td>{{ log.day }}</td>
-                                <td>{{ log.no_result }}</td>
-                                <td>{{ log.Category }}</td>
+                                <td>{{ log.title_count }}</td>
+                                <td>{{ log.results.no_result }}</td>
+                                <td>{{ log.results.Category }}</td>
                                 <td>{{ log.total }}</td>
                             </tr>
                             {% endfor %}

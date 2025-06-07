@@ -145,7 +145,8 @@ def logs_by_day(table_name="logs"):
                 WHEN response_status LIKE 'تصنيف%' THEN 'Category'
                 ELSE response_status
             END AS status_group,
-            COUNT(*) AS count
+            COUNT(request_data) AS title_count,
+            sum(response_count) AS count
         FROM {table_name}
         GROUP BY date_only, status_group
         ORDER BY date_only;

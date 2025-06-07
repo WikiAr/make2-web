@@ -143,31 +143,36 @@ def logs_by_day(request):
     if table_name not in db_tables:
         table_name = "logs"
     # ---
-    logs = logs_db.logs_by_day(table_name=table_name)
+    logs_data = logs_db.logs_by_day(table_name=table_name)
     # ---
     data_logs = {}
     # ---
     # [ { "date_only": "2025-06-06", "status_group": "no_result", "count": 2 }, { "date_only": "2025-06-06", "status_group": "Category", "count": 1 } ]
     # ---
-    for x in logs:
+    for x in logs_data:
         day = x["date_only"]
         # ---
-        data_logs.setdefault(day, {"no_result": 0, "Category": 0})
+        data_logs.setdefault(day, {"day":day, "title_count":0 , "results": {"no_result": 0, "Category": 0}})
         # ---
-        data_logs[day][x["status_group"]] = x["count"]
+        data_logs[day]["title_count"] += x["title_count"]
+        # ---
+        data_logs[day]["results"][x["status_group"]] = x["count"]
     # ---
     logs = []
     # ---
     sum_all = 0
     # ---
     for day, results_keys in data_logs.items():
-        results_keys["total"] = sum(results_keys.values())
-        sum_all += results_keys["total"]
-        results_keys["day"] = day
+        total = sum(results_keys["results"].values())
+        sum_all += total
+        # ---
+        results_keys["total"] = total
+        # ---
         logs.append(results_keys)
     # ---
     data = {
         "dbs": dbs,
+        "logs_data": logs_data,
         "logs": logs,
         "tab": {
             "sum_all": f"{sum_all:,}",

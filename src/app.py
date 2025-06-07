@@ -155,6 +155,13 @@ def main() -> str:
 def titles() -> str:
     return render_template("list.html")
 
+@app.route("/chart", methods=["GET"])
+def charts() -> str:
+    return render_template("chart.html")
+
+@app.route("/x", methods=["GET"])
+def charts2() -> str:
+    return render_template("x.html")
 
 @app.errorhandler(404)
 def page_not_found(e):
