@@ -17,20 +17,27 @@
     <div class="card-body p-3">
 
         <!-- Month-Year Filter -->
-        <div class="mb-3 d-flex gap-3">
-            <div>
+        <div class="row">
+            <div class="col-md-2">
                 <label for="monthSelect">Month:</label>
                 <select id="monthSelect" class="form-control"></select>
             </div>
-            <div>
+            <div class="col-md-2">
                 <label for="yearSelect">Year:</label>
                 <select id="yearSelect" class="form-control"></select>
             </div>
-            <div class="align-self-end">
+            <div class="col-md-2">
+                <label for="dateStart">Date start:</label>
+                <select id="dateStart" class="form-control"></select>
+            </div>
+            <div class="col-md-2">
+                <label for="dateEnd">Date end:</label>
+                <select id="dateEnd" class="form-control"></select>
+            </div>
+            <div class="col-md-3 align-self-end">
                 <button class="btn btn-primary me-2" onclick="filterByMonthYear()">Apply Filter</button>
                 <button class="btn btn-secondary" onclick="resetFilters()">Reset</button>
             </div>
-
         </div>
 
         <!-- Charts -->
@@ -43,6 +50,8 @@
             function resetFilters() {
                 document.getElementById('monthSelect').value = 'all';
                 document.getElementById('yearSelect').value = 'all';
+                document.getElementById('dateStart').value = 'all';
+                document.getElementById('dateEnd').value = 'all';
                 renderCharts(rawData);
             }
 
@@ -57,25 +66,33 @@
             }
 
             function populateMonthYearFilters(data) {
+                const days = new Set();
                 const months = new Set();
                 const years = new Set();
 
                 data.forEach(item => {
                     const [year, month] = item.day.split('-');
+                    days.add(item.day);
                     months.add(month);
                     years.add(year);
                 });
 
                 const monthSelect = document.getElementById('monthSelect');
                 const yearSelect = document.getElementById('yearSelect');
+                const dateStart = document.getElementById('dateStart');
+                const dateEnd = document.getElementById('dateEnd');
 
                 // Reset options
                 monthSelect.innerHTML = '';
                 yearSelect.innerHTML = '';
+                dateStart.innerHTML = '';
+                dateEnd.innerHTML = '';
 
                 // Add "All" option
                 monthSelect.innerHTML += '<option value="all">All</option>';
                 yearSelect.innerHTML += '<option value="all">All</option>';
+                dateStart.innerHTML += '<option value="all">All</option>';
+                dateEnd.innerHTML += '<option value="all">All</option>';
 
                 // Sort and populate the rest
                 Array.from(months).sort().forEach(m => {
@@ -91,11 +108,24 @@
                     option.text = y;
                     yearSelect.appendChild(option);
                 });
+                Array.from(days).sort().forEach(d => {
+                    const option = document.createElement('option');
+                    option.value = d;
+                    option.text = d;
+                    dateStart.appendChild(option);
+
+                    const option2 = document.createElement('option');
+                    option2.value = d;
+                    option2.text = d;
+                    dateEnd.appendChild(option2);
+                })
             }
 
             function filterByMonthYear() {
                 const selectedMonth = document.getElementById('monthSelect').value;
                 const selectedYear = document.getElementById('yearSelect').value;
+                const selectedstartDate = document.getElementById('dateStart').value;
+                const selectedendDate = document.getElementById('dateEnd').value;
 
                 const filtered = rawData.filter(item => {
                     const [year, month] = item.day.split('-');
