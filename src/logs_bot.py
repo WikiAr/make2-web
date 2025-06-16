@@ -135,6 +135,7 @@ def view_logs(request):
     # ---
     return result
 
+
 def logs_by_day(request):
     # ---
     db_path = request.args.get("db_path")
@@ -160,7 +161,7 @@ def logs_by_day(request):
     for x in logs_data:
         day = x["date_only"]
         # ---
-        data_logs.setdefault(day, {"day":day, "title_count":0 , "results": {"no_result": 0, "Category": 0}})
+        data_logs.setdefault(day, {"day": day, "title_count": 0 , "results": {"no_result": 0, "Category": 0}})
         # ---
         data_logs[day]["title_count"] += x["title_count"]
         # ---
@@ -179,7 +180,10 @@ def logs_by_day(request):
         logs.append(results_keys)
     # ---
     # sort logs by total
-    logs.sort(key=lambda x: x["total"], reverse=True)
+    # logs.sort(key=lambda x: x["total"], reverse=True)
+    # ---
+    # sort logs by day
+    logs.sort(key=lambda x: x["day"], reverse=False)
     # ---
     data = {
         "dbs": dbs,
