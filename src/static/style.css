@@ -66,6 +66,11 @@ body {
     direction: ltr
 }
 
+.ltr_right {
+    text-align: right;
+    direction: rtl
+}
+
 @media (prefers-color-scheme: dark) {
     .spinner-border {
         color: #f8f9fa !important;
