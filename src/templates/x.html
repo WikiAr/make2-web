@@ -113,7 +113,6 @@
                 // Add event listeners to update date options when month/year changes
                 monthSelect.addEventListener('change', updateDateOptions);
                 yearSelect.addEventListener('change', updateDateOptions);
-                dateStart.addEventListener('change', updateEndDateDefault);
 
                 // Initial population of date options
                 updateDateOptions();
@@ -147,39 +146,8 @@
                         option2.text = d;
                         dateEnd.appendChild(option2);
                     });
-
-                    // Update end date default if needed
-                    updateEndDateDefault();
                 }
 
-                function updateEndDateDefault() {
-                    const selectedMonth = monthSelect.value;
-                    const selectedYear = yearSelect.value;
-                    const selectedStartDate = dateStart.value;
-
-                    // Only set default end date if:
-                    // 1. A specific month is selected
-                    // 2. A start date is selected
-                    // 3. End date is not already set
-                    if (selectedMonth !== 'all' &&
-                        selectedStartDate !== 'all' &&
-                        dateEnd.value === 'all') {
-
-                        // Get all dates in selected month
-                        const monthDates = Array.from(days)
-                            .filter(d => {
-                                const [year, month] = d.split('-');
-                                return month === selectedMonth &&
-                                    (selectedYear === 'all' || year === selectedYear);
-                            })
-                            .sort();
-
-                        // Set end date to last day of month
-                        if (monthDates.length > 0) {
-                            dateEnd.value = monthDates[monthDates.length - 1];
-                        }
-                    }
-                }
             }
 
             function filterByMonthYear() {
@@ -189,6 +157,14 @@
                 const selectedEndDate = document.getElementById('dateEnd').value;
 
                 const filtered = rawData.filter(item => {
+                    // Fallback to month and year filtering
+                    const [year, month] = item.day.split('-');
+                    const matchYear = (selectedYear === 'all') || (year === selectedYear);
+                    const matchMonth = (selectedMonth === 'all') || (month === selectedMonth);
+                    return matchYear && matchMonth;
+                });
+
+                const filtered2 = filtered.filter(item => {
                     // Handle date range filtering
                     if (selectedStartDate !== 'all' || selectedEndDate !== 'all') {
                         // Only start date is specified
@@ -202,15 +178,10 @@
                         // Both dates are specified
                         return item.day >= selectedStartDate && item.day <= selectedEndDate;
                     }
-
-                    // Fallback to month and year filtering
-                    const [year, month] = item.day.split('-');
-                    const matchYear = (selectedYear === 'all') || (year === selectedYear);
-                    const matchMonth = (selectedMonth === 'all') || (month === selectedMonth);
-                    return matchYear && matchMonth;
+                    return true;
                 });
 
-                renderCharts(filtered);
+                renderCharts(filtered2);
             }
 
 
