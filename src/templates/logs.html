@@ -199,8 +199,16 @@
                             <tr>
                                 <td>{{ log.id }}</td>
                                 <!-- <td>{{ log.endpoint }}</td> -->
-                                <td class="ltr_left">{{ log.request_data }}</td>
-                                <td>{{ log.response_status }}</td>
+                                <td class="ltr_left">
+                                    <a href="https://en.wikipedia.org/wiki/{{ log.request_data }}" target="_blank">
+                                        {{ log.request_data }}
+                                    </a>
+                                </td>
+                                <td class="ltr_right">
+                                    <a href="https://ar.wikipedia.org/wiki/{{ log.response_status }}" target="_blank">
+                                        {{ log.response_status }}
+                                    </a>
+                                </td>
                                 <td>{{ log.response_time }}</td>
                                 <td>{{ log.response_count }}</td>
                                 <td>{{ log.timestamp }}</td>
