@@ -113,6 +113,7 @@
                 // Add event listeners to update date options when month/year changes
                 monthSelect.addEventListener('change', updateDateOptions);
                 yearSelect.addEventListener('change', updateDateOptions);
+                dateStart.addEventListener('change', updateEndDateDefault);
 
                 // Initial population of date options
                 updateDateOptions();
@@ -126,23 +127,58 @@
                     dateEnd.innerHTML = '<option value="all">All</option>';
 
                     // Filter and add dates based on selected month/year
-                    Array.from(days).sort().forEach(d => {
-                        const [year, month] = d.split('-');
-                        const matchMonth = (selectedMonth === 'all') || (month === selectedMonth);
-                        const matchYear = (selectedYear === 'all') || (year === selectedYear);
+                    const filteredDates = Array.from(days)
+                        .filter(d => {
+                            const [year, month] = d.split('-');
+                            const matchMonth = (selectedMonth === 'all') || (month === selectedMonth);
+                            const matchYear = (selectedYear === 'all') || (year === selectedYear);
+                            return matchMonth && matchYear;
+                        })
+                        .sort();
 
-                        if (matchMonth && matchYear) {
-                            const option1 = document.createElement('option');
-                            option1.value = d;
-                            option1.text = d;
-                            dateStart.appendChild(option1);
+                    filteredDates.forEach(d => {
+                        const option1 = document.createElement('option');
+                        option1.value = d;
+                        option1.text = d;
+                        dateStart.appendChild(option1);
 
-                            const option2 = document.createElement('option');
-                            option2.value = d;
-                            option2.text = d;
-                            dateEnd.appendChild(option2);
-                        }
+                        const option2 = document.createElement('option');
+                        option2.value = d;
+                        option2.text = d;
+                        dateEnd.appendChild(option2);
                     });
+
+                    // Update end date default if needed
+                    updateEndDateDefault();
+                }
+
+                function updateEndDateDefault() {
+                    const selectedMonth = monthSelect.value;
+                    const selectedYear = yearSelect.value;
+                    const selectedStartDate = dateStart.value;
+
+                    // Only set default end date if:
+                    // 1. A specific month is selected
+                    // 2. A start date is selected
+                    // 3. End date is not already set
+                    if (selectedMonth !== 'all' &&
+                        selectedStartDate !== 'all' &&
+                        dateEnd.value === 'all') {
+
+                        // Get all dates in selected month
+                        const monthDates = Array.from(days)
+                            .filter(d => {
+                                const [year, month] = d.split('-');
+                                return month === selectedMonth &&
+                                    (selectedYear === 'all' || year === selectedYear);
+                            })
+                            .sort();
+
+                        // Set end date to last day of month
+                        if (monthDates.length > 0) {
+                            dateEnd.value = monthDates[monthDates.length - 1];
+                        }
+                    }
                 }
             }
 
