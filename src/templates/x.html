@@ -124,10 +124,25 @@
             function filterByMonthYear() {
                 const selectedMonth = document.getElementById('monthSelect').value;
                 const selectedYear = document.getElementById('yearSelect').value;
-                const selectedstartDate = document.getElementById('dateStart').value;
-                const selectedendDate = document.getElementById('dateEnd').value;
+                const selectedStartDate = document.getElementById('dateStart').value;
+                const selectedEndDate = document.getElementById('dateEnd').value;
 
                 const filtered = rawData.filter(item => {
+                    // Handle date range filtering
+                    if (selectedStartDate !== 'all' || selectedEndDate !== 'all') {
+                        // Only start date is specified
+                        if (selectedStartDate !== 'all' && selectedEndDate === 'all') {
+                            return item.day >= selectedStartDate;
+                        }
+                        // Only end date is specified
+                        if (selectedStartDate === 'all' && selectedEndDate !== 'all') {
+                            return item.day <= selectedEndDate;
+                        }
+                        // Both dates are specified
+                        return item.day >= selectedStartDate && item.day <= selectedEndDate;
+                    }
+
+                    // Fallback to month and year filtering
                     const [year, month] = item.day.split('-');
                     const matchYear = (selectedYear === 'all') || (year === selectedYear);
                     const matchMonth = (selectedMonth === 'all') || (month === selectedMonth);
