@@ -94,7 +94,7 @@
                 dateStart.innerHTML += '<option value="all">All</option>';
                 dateEnd.innerHTML += '<option value="all">All</option>';
 
-                // Sort and populate the rest
+                // Sort and populate months
                 Array.from(months).sort().forEach(m => {
                     const option = document.createElement('option');
                     option.value = m;
@@ -102,23 +102,48 @@
                     monthSelect.appendChild(option);
                 });
 
+                // Sort and populate years
                 Array.from(years).sort().forEach(y => {
                     const option = document.createElement('option');
                     option.value = y;
                     option.text = y;
                     yearSelect.appendChild(option);
                 });
-                Array.from(days).sort().forEach(d => {
-                    const option = document.createElement('option');
-                    option.value = d;
-                    option.text = d;
-                    dateStart.appendChild(option);
 
-                    const option2 = document.createElement('option');
-                    option2.value = d;
-                    option2.text = d;
-                    dateEnd.appendChild(option2);
-                })
+                // Add event listeners to update date options when month/year changes
+                monthSelect.addEventListener('change', updateDateOptions);
+                yearSelect.addEventListener('change', updateDateOptions);
+
+                // Initial population of date options
+                updateDateOptions();
+
+                function updateDateOptions() {
+                    const selectedMonth = monthSelect.value;
+                    const selectedYear = yearSelect.value;
+
+                    // Reset date options
+                    dateStart.innerHTML = '<option value="all">All</option>';
+                    dateEnd.innerHTML = '<option value="all">All</option>';
+
+                    // Filter and add dates based on selected month/year
+                    Array.from(days).sort().forEach(d => {
+                        const [year, month] = d.split('-');
+                        const matchMonth = (selectedMonth === 'all') || (month === selectedMonth);
+                        const matchYear = (selectedYear === 'all') || (year === selectedYear);
+
+                        if (matchMonth && matchYear) {
+                            const option1 = document.createElement('option');
+                            option1.value = d;
+                            option1.text = d;
+                            dateStart.appendChild(option1);
+
+                            const option2 = document.createElement('option');
+                            option2.value = d;
+                            option2.text = d;
+                            dateEnd.appendChild(option2);
+                        }
+                    });
+                }
             }
 
             function filterByMonthYear() {
