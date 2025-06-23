@@ -9,7 +9,7 @@
     <div class="card">
         <div class="card-header">
             <span class="card-title mb-0 d-flex align-items-center justify-content-center h4">
-                Most with no result Requests</span>
+                Most Categories with no result</span>
             </span>
         </div>
         <div class="card-body">
@@ -22,9 +22,10 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Title</th>
+                                <th class="w-50">Title</th>
                                 <th>Count</th>
-                                <th>Ar</th>
+                                <th>Get</th>
+                                <th class="w-25">Ar</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -39,38 +40,82 @@
 <script>
     $(document).ready(function () {
         const end_point = "/api/logs?table_name=logs&per_page=200&order_by=response_count&order=DESC&status=no_result";
-
+        // ---
         $("#main_table").DataTable({
             ajax: {
                 url: end_point,
-                dataSrc: "logs" // لأن البيانات موجودة داخل المفتاح "logs"
+                type: 'GET',
+                dataType: 'json',
+                dataSrc: "logs"
             },
+            paging: false,
+            info: false,
+            searching: false,
+            order: [],
             columns: [
                 {
-                    data: "id",
-                    title: "#"
+                    data: null,
+                    render: (_, __, ___, meta) => meta.row + 1
+                },
+                {
+                    data: 'request_data',
+                    render: function (data) {
+                        return `<a href="https://en.wikipedia.org/wiki/${data}" target="_blank">${data}</a>`;
+                    }
+                },
+                {
+                    data: 'response_count',
+                    render: function (data) {
+                        return Number(data).toLocaleString();
+                    }
                 },
                 {
                     data: "request_data",
-                    title: "Title"
-                },
-                {
-                    data: "response_count",
-                    title: "Count"
-                },
+                    title: "Get",
+                    render: function (data, type, row, meta) {
+                        const encodedCategory = encodeURIComponent(data);
+                        const spanId = `result-${meta.row}`;
+                        const btnId = `btn-${meta.row}`;
+                        return `
+                        <button class="btn btn-outline-secondary btn-sm rounded-circle p-1" data-bs-toggle="tooltip"
+                        id="${btnId}" data-cat="${encodedCategory}" data-span="${spanId}"
+                        >Get</button>
+                        `;
+                    }
+                }
+                ,
                 {
                     data: "request_data",
                     title: "Ar",
-                    render: function (data, type, row) {
-                        // رابط ترجمة ويكيبيديا أو صفحة مفترضة
-                        const url = `https://ar.wikipedia.org/wiki/${encodeURIComponent(data)}`;
-                        return `<a href="${url}" target="_blank">🔗</a>`;
+                    render: function (data, type, row, meta) {
+                        const spanId = `result-${meta.row}`;
+                        return `<span id="${spanId}"></span>`;
                     }
                 }
-            ],
-            responsive: true
+
+            ]
         });
+        // ---
+        $('#main_table').on('click', 'button', function () {
+            const button = $(this);
+            const category = button.data('cat');
+            const spanId = button.data('span');
+            const span = $(`#${spanId}`);
+
+            // عرض تحميل مؤقت
+            span.html('<span class="text-muted">Loading ...</span>');
+
+            $.get(`/api/${category}`, function (data) {
+                if (data && data.result) {
+                    span.html(`<span class="badge bg-success text-light">${data.result}</span>`);
+                } else {
+                    span.html(`<span class="text-danger">no result</span>`);
+                }
+            }).fail(function () {
+                span.html(`<span class="text-warning">Error</span>`);
+            });
+        });
+
     });
 </script>
-
 {% endblock %}
