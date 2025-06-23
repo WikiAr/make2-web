@@ -48,15 +48,17 @@
 
         span.html('<span class="text-muted">Loading ...</span>');
 
-        $.get(`/api/${category}`, function (data) {
-            if (data && data.result) {
-                span.html(`<span class="badge bg-success text-light">${data.result}</span>`);
-            } else {
-                span.html(`<span class="text-danger">no result</span>`);
-            }
-        }).fail(function () {
-            span.html(`<span class="text-warning">Error</span>`);
-        });
+        return $.get(`/api/${category}`)
+            .then(data => {
+                if (data && data.result) {
+                    span.html(`<span class="text-success">${data.result}</span>`);
+                } else {
+                    span.html(`<span class="text-danger">no result</span>`);
+                }
+            })
+            .catch(() => {
+                span.html(`<span class="text-warning">Error</span>`);
+            });
     }
 
     const end_point = "/api/logs?table_name=logs&per_page=200&order_by=response_count&order=DESC&status=no_result";
@@ -120,16 +122,26 @@
         // ---
         $("#main_table").DataTable(table_data);
         // ---
-        $('#run_all').on('click', function () {
-            $('#main_table').find('[data-cat]').each(function () {
-                translateCategory($(this));
-            });
-        });
-        // ---
         $('#main_table').on('click', 'button', function () {
             translateCategory($(this));
         });
         // ---
+        $('#run_all').on('click', async function () {
+            const button = $(this);
+            const originalText = button.html();
+
+            button.prop('disabled', true).html('⏳ Loading...');
+
+            const allButtons = $('#main_table').find('[data-cat]').toArray();
+
+            for (const el of allButtons) {
+                await translateCategory($(el));
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+
+            button.prop('disabled', false).html(originalText);
+        });
+
     });
 </script>
 {% endblock %}
