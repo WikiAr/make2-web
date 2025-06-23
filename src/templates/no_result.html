@@ -1,0 +1,76 @@
+{% extends "main.html" %}
+{% block title %}
+<title>API LOGS</title>
+{% endblock %}
+
+{% block content %}
+</div>
+<div class="col-11">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title mb-0 d-flex align-items-center justify-content-center h4">
+                Most with no result Requests</span>
+            </span>
+        </div>
+        <div class="card-body">
+            <!-- Filter Form -->
+            <form method="get" class="form-inline mb-3 gap-2">
+            </form>
+            <div class="row">
+                <div class="col-md-12">
+                    <table id="main_table" class="table table-striped table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Title</th>
+                                <th>Count</th>
+                                <th>Ar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        const end_point = "/api/logs?table_name=logs&per_page=200&order_by=response_count&order=DESC&status=no_result";
+
+        $("#main_table").DataTable({
+            ajax: {
+                url: end_point,
+                dataSrc: "logs" // لأن البيانات موجودة داخل المفتاح "logs"
+            },
+            columns: [
+                {
+                    data: "id",
+                    title: "#"
+                },
+                {
+                    data: "request_data",
+                    title: "Title"
+                },
+                {
+                    data: "response_count",
+                    title: "Count"
+                },
+                {
+                    data: "request_data",
+                    title: "Ar",
+                    render: function (data, type, row) {
+                        // رابط ترجمة ويكيبيديا أو صفحة مفترضة
+                        const url = `https://ar.wikipedia.org/wiki/${encodeURIComponent(data)}`;
+                        return `<a href="${url}" target="_blank">🔗</a>`;
+                    }
+                }
+            ],
+            responsive: true
+        });
+    });
+</script>
+
+{% endblock %}

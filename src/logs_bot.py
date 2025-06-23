@@ -35,7 +35,7 @@ def view_logs(request):
     # ---
     # Validate values
     page = max(1, page)
-    per_page = max(1, min(100, per_page))
+    per_page = max(1, min(200, per_page))
 
     # Offset for pagination
     offset = (page - 1) * per_page
