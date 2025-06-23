@@ -16,6 +16,9 @@
             <!-- Filter Form -->
             <form method="get" class="form-inline mb-3 gap-2">
             </form>
+            <div class="mb-2 text-end">
+                <button id="run_all" class="btn btn-sm btn-outline-primary">🔄 Start All</button>
+            </div>
             <div class="row">
                 <div class="col-md-12">
                     <table id="main_table" class="table table-striped table-hover table-bordered">
@@ -38,84 +41,95 @@
     </div>
 </div>
 <script>
-    $(document).ready(function () {
-        const end_point = "/api/logs?table_name=logs&per_page=200&order_by=response_count&order=DESC&status=no_result";
-        // ---
-        $("#main_table").DataTable({
-            ajax: {
-                url: end_point,
-                type: 'GET',
-                dataType: 'json',
-                dataSrc: "logs"
+    function translateCategory(button) {
+        const category = button.data('cat');
+        const spanId = button.data('span');
+        const span = $(`#${spanId}`);
+
+        span.html('<span class="text-muted">Loading ...</span>');
+
+        $.get(`/api/${category}`, function (data) {
+            if (data && data.result) {
+                span.html(`<span class="badge bg-success text-light">${data.result}</span>`);
+            } else {
+                span.html(`<span class="text-danger">no result</span>`);
+            }
+        }).fail(function () {
+            span.html(`<span class="text-warning">Error</span>`);
+        });
+    }
+
+    const end_point = "/api/logs?table_name=logs&per_page=200&order_by=response_count&order=DESC&status=no_result";
+
+    const table_data = {
+        ajax: {
+            url: end_point,
+            type: 'GET',
+            dataType: 'json',
+            dataSrc: "logs"
+        },
+        paging: false,
+        info: false,
+        searching: false,
+        order: [],
+        columns: [
+            {
+                data: null,
+                render: (_, __, ___, meta) => meta.row + 1
             },
-            paging: false,
-            info: false,
-            searching: false,
-            order: [],
-            columns: [
-                {
-                    data: null,
-                    render: (_, __, ___, meta) => meta.row + 1
-                },
-                {
-                    data: 'request_data',
-                    render: function (data) {
-                        return `<a href="https://en.wikipedia.org/wiki/${data}" target="_blank">${data}</a>`;
-                    }
-                },
-                {
-                    data: 'response_count',
-                    render: function (data) {
-                        return Number(data).toLocaleString();
-                    }
-                },
-                {
-                    data: "request_data",
-                    title: "Get",
-                    render: function (data, type, row, meta) {
-                        const encodedCategory = encodeURIComponent(data);
-                        const spanId = `result-${meta.row}`;
-                        const btnId = `btn-${meta.row}`;
-                        return `
+            {
+                data: 'request_data',
+                render: function (data) {
+                    return `<a href="https://en.wikipedia.org/wiki/${data}" target="_blank">${data}</a>`;
+                }
+            },
+            {
+                data: 'response_count',
+                render: function (data) {
+                    return Number(data).toLocaleString();
+                }
+            },
+            {
+                data: "request_data",
+                title: "Get",
+                render: function (data, type, row, meta) {
+                    const encodedCategory = encodeURIComponent(data);
+                    const spanId = `result-${meta.row}`;
+                    const btnId = `btn-${meta.row}`;
+                    return `
                         <button class="btn btn-outline-secondary btn-sm rounded-circle p-1" data-bs-toggle="tooltip"
                         id="${btnId}" data-cat="${encodedCategory}" data-span="${spanId}"
                         >Get</button>
                         `;
-                    }
                 }
-                ,
-                {
-                    data: "request_data",
-                    title: "Ar",
-                    render: function (data, type, row, meta) {
-                        const spanId = `result-${meta.row}`;
-                        return `<span id="${spanId}"></span>`;
-                    }
+            }
+            ,
+            {
+                data: "request_data",
+                title: "Ar",
+                render: function (data, type, row, meta) {
+                    const spanId = `result-${meta.row}`;
+                    return `<span id="${spanId}"></span>`;
                 }
+            }
 
-            ]
+        ]
+    };
+
+    $(document).ready(function () {
+        // ---
+        $("#main_table").DataTable(table_data);
+        // ---
+        $('#run_all').on('click', function () {
+            $('#main_table').find('[data-cat]').each(function () {
+                translateCategory($(this));
+            });
         });
         // ---
         $('#main_table').on('click', 'button', function () {
-            const button = $(this);
-            const category = button.data('cat');
-            const spanId = button.data('span');
-            const span = $(`#${spanId}`);
-
-            // عرض تحميل مؤقت
-            span.html('<span class="text-muted">Loading ...</span>');
-
-            $.get(`/api/${category}`, function (data) {
-                if (data && data.result) {
-                    span.html(`<span class="badge bg-success text-light">${data.result}</span>`);
-                } else {
-                    span.html(`<span class="text-danger">no result</span>`);
-                }
-            }).fail(function () {
-                span.html(`<span class="text-warning">Error</span>`);
-            });
+            translateCategory($(this));
         });
-
+        // ---
     });
 </script>
 {% endblock %}
