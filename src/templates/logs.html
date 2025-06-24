@@ -4,17 +4,17 @@
 {% endblock %}
 
 {% set common_args = {
-    'per_page': tab.per_page,
-    'order': tab.order,
-    'like': tab.like,
-    'table_name': tab.table_name,
-    'status': tab.status,
-    'day': tab.day
+    'per_page': result.tab.per_page,
+    'order': result.tab.order,
+    'like': result.tab.like,
+    'table_name': result.tab.table_name,
+    'status': result.tab.status,
+    'day': result.tab.day
 } %}
 
 {% set col_class = "col-md-4" %}
 
-{% if dbs %}
+{% if result.dbs %}
 {% set col_class = "col-md-3" %}
 {% endif %}
 
@@ -24,13 +24,13 @@
     <div class="card">
         <div class="card-header">
             <span class="card-title mb-0 d-flex align-items-center justify-content-center h4">
-                Table: {{ tab.table_name }} (<span class="">{{ tab.sum_all }} Requests</span>)
+                Table: {{ result.tab.table_name }} (<span class="">{{ result.tab.sum_all }} Requests</span>)
             </span>
         </div>
         <div class="card-body">
             <!-- Filter Form -->
             <form method="get" action="{{ url_for('view_logs') }}" class="form-inline mb-3 gap-2">
-                <input type="text" name="table_name" value="{{ tab.table_name }}" hidden />
+                <input type="text" name="table_name" value="{{ result.tab.table_name }}" hidden />
                 <div class="row">
                     <div class="col-md-4">
                         <div class="row">
@@ -39,7 +39,7 @@
                                     <label for="per_page" class="form-label">Per Page</label>
                                     <select name="per_page" id="per_page" class="form-select w-100">
                                         {% for n in [10, 20, 50, 100, 150, 200] %}
-                                        <option value="{{ n }}" {% if tab.per_page == n %}selected{% endif %}>{{ n }}
+                                        <option value="{{ n }}" {% if result.tab.per_page == n %}selected{% endif %}>{{ n }}
                                         </option>
                                         {% endfor %}
                                     </select>
@@ -49,9 +49,9 @@
                                 <div class="form-group">
                                     <label for="order_by" class="form-label">Sort By</label>
                                     <select name="order_by" id="order_by" class="form-select w-100">
-                                        {% for order_type in order_by_types %}
+                                        {% for order_type in result.order_by_types %}
                                         <option value="{{ order_type }}"
-                                            {% if tab.order_by == order_type %}selected{% endif %}>
+                                            {% if result.tab.order_by == order_type %}selected{% endif %}>
                                             {{ order_type }}</option>
                                         {% endfor %}
                                     </select>
@@ -63,12 +63,12 @@
                                     <div class="form-control d-flex flex-column">
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="order" id="desc"
-                                                value="DESC" {% if tab.order == 'DESC' %}checked{% endif %}>
+                                                value="DESC" {% if result.tab.order == 'DESC' %}checked{% endif %}>
                                             <label class="form-check-label" for="desc">DESC</label>
                                         </div>
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="order" id="asc"
-                                                value="ASC" {% if tab.order == 'ASC' %}checked{% endif %}>
+                                                value="ASC" {% if result.tab.order == 'ASC' %}checked{% endif %}>
                                             <label class="form-check-label" for="asc">ASC</label>
                                         </div>
                                     </div>
@@ -82,8 +82,8 @@
                                 <div class="form-group">
                                     <label for="status" class="form-label">Result</label>
                                     <select name="status" id="status" class="form-select w-100">
-                                        {% for st in status_table %}
-                                        <option value="{{ st }}" {% if tab.status == st %}selected{% endif %}>{{ st }}
+                                        {% for st in result.status_table %}
+                                        <option value="{{ st }}" {% if result.tab.status == st %}selected{% endif %}>{{ st }}
                                         </option>
                                         {% endfor %}
                                     </select>
@@ -92,24 +92,24 @@
                             <div class="{{ col_class }}">
                                 <div class="form-group">
                                     <label for="like" class="form-label">Like:</label>
-                                    <input type="text" name="like" id="like" class="form-control" value="{{ tab.like }}"
+                                    <input type="text" name="like" id="like" class="form-control" value="{{ result.tab.like }}"
                                         placeholder="%movie%">
                                 </div>
                             </div>
                             <div class="{{ col_class }}">
                                 <div class="form-group">
                                     <label for="like" class="form-label">Day:</label>
-                                    <input type="text" name="day" id="day" class="form-control" value="{{ tab.day }}"
+                                    <input type="text" name="day" id="day" class="form-control" value="{{ result.tab.day }}"
                                         placeholder="2025-01-01">
                                 </div>
                             </div>
-                            {% if dbs %}
+                            {% if result.dbs %}
                             <div class="{{ col_class }}">
                                 <div class="form-group">
                                     <label for="db_path" class="form-label">Database</label>
                                     <select name="db_path" id="db_path" class="form-select w-100">
-                                        {% for db in dbs %}
-                                        <option value="{{ db }}" {% if tab.db_path == db %}selected{% endif %}>
+                                        {% for db in result.dbs %}
+                                        <option value="{{ db }}" {% if result.tab.db_path == db %}selected{% endif %}>
                                             {{ db }}</option>
                                         {% endfor %}
                                     </select>
@@ -129,7 +129,7 @@
                     <nav aria-label="Page navigation">
                         <ul class="pagination justify-content-center">
                             <!-- First page -->
-                            <li class="page-item {% if tab.page == 1 %}disabled{% endif %}">
+                            <li class="page-item {% if result.tab.page == 1 %}disabled{% endif %}">
                                 <a class="page-link" href="{{ url_for('view_logs', page=1, **common_args) }}"
                                     aria-label="First Page">
                                     <span aria-hidden="true">&laquo;&laquo;</span>
@@ -137,16 +137,16 @@
                             </li>
 
                             <!-- Previous page -->
-                            <li class="page-item {% if tab.page == 1 %}disabled{% endif %}">
-                                <a class="page-link" href="{{ url_for('view_logs', page=tab.page-1, **common_args) }}"
+                            <li class="page-item {% if result.tab.page == 1 %}disabled{% endif %}">
+                                <a class="page-link" href="{{ url_for('view_logs', page=result.tab.page-1, **common_args) }}"
                                     aria-label="Previous Page">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
 
                             <!-- Page Numbers -->
-                            {% for p in range(tab.start_page, tab.end_page + 1) %}
-                            <li class="page-item {% if p == tab.page %}active{% endif %}">
+                            {% for p in range(result.tab.start_page, result.tab.end_page + 1) %}
+                            <li class="page-item {% if p == result.tab.page %}active{% endif %}">
                                 <a class="page-link" href="{{ url_for('view_logs', page=p, **common_args) }}">
                                     {{ p }}
                                 </a>
@@ -154,17 +154,17 @@
                             {% endfor %}
 
                             <!-- Next page -->
-                            <li class="page-item {% if tab.page == tab.total_pages %}disabled{% endif %}">
-                                <a class="page-link" href="{{ url_for('view_logs', page=tab.page+1, **common_args) }}"
+                            <li class="page-item {% if result.tab.page == result.tab.total_pages %}disabled{% endif %}">
+                                <a class="page-link" href="{{ url_for('view_logs', page=result.tab.page+1, **common_args) }}"
                                     aria-label="Next Page">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>
 
                             <!-- Last page -->
-                            <li class="page-item {% if tab.page == tab.total_pages %}disabled{% endif %}">
+                            <li class="page-item {% if result.tab.page == result.tab.total_pages %}disabled{% endif %}">
                                 <a class="page-link"
-                                    href="{{ url_for('view_logs', page=tab.total_pages, **common_args) }}"
+                                    href="{{ url_for('view_logs', page=result.tab.total_pages, **common_args) }}"
                                     aria-label="Last Page">
                                     <span aria-hidden="true">&raquo;&raquo;</span>
                                 </a>
@@ -175,8 +175,8 @@
 
                 <!-- Page info -->
                 <div class="col-12 text-center text-muted">
-                    <small>Page {{ tab.page }} of {{ tab.total_pages }}
-                        ({{ tab.start_log }} - {{ tab.end_log }} out of {{ tab.total_logs }} records)</small>
+                    <small>Page {{ result.tab.page }} of {{ result.tab.total_pages }}
+                        ({{ result.tab.start_log }} - {{ result.tab.end_log }} out of {{ result.tab.total_logs }} records)</small>
                 </div>
             </div>
             <div class="row">
@@ -195,7 +195,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for log in logs %}
+                            {% for log in result.logs %}
                             <tr>
                                 <td>{{ log.id }}</td>
                                 <!-- <td>{{ log.endpoint }}</td> -->

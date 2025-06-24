@@ -29,9 +29,11 @@ except ImportError:
 app = Flask(__name__)
 # CORS(app)  # ← لتفعيل CORS
 
+
 def jsonify(data : dict) -> str:
     response_json = json.dumps(data, ensure_ascii=False, indent=4)
     return Response(response=response_json, content_type="application/json; charset=utf-8")
+
 
 @app.route("/api/logs_by_day", methods=["GET"])
 def get_logs_by_day() -> str:
@@ -39,6 +41,7 @@ def get_logs_by_day() -> str:
     result = result.get("logs", [])
     # ---
     return jsonify(result)
+
 
 @app.route("/api/<title>", methods=["GET"])
 def get_title(title) -> str:
@@ -125,12 +128,27 @@ def get_titles():
     return jsonify(response_data)
 
 
+@app.route("/api/logs", methods=["GET"])
+def logs_api():
+    # ---
+    result = logs_bot.view_logs(request)
+    # ---
+    return jsonify(result)
+
+
 @app.route("/logs1", methods=["GET"])
 def view_logs():
     # ---
     result = logs_bot.view_logs(request)
     # ---
-    return render_template("logs.html", logs=result["logs"], order_by_types=result["order_by_types"], tab=result["tab"], status_table=result["status_table"], dbs=result["dbs"])
+    return render_template("logs.html", result=result)
+
+
+@app.route("/no_result", methods=["GET"])
+def no_result():
+    # ---
+    return render_template("no_result.html")
+
 
 @app.route("/logs_by_day", methods=["GET"])
 def logs_by_day():
@@ -139,10 +157,10 @@ def logs_by_day():
     # ---
     return render_template(
         "logs_by_day.html",
-        logs = result.get("logs", []),
-        tab = result.get("tab", []),
-        status_table = result.get("status_table", []),
-        dbs = result.get("dbs", []),
+        logs=result.get("logs", []),
+        tab=result.get("tab", []),
+        status_table=result.get("status_table", []),
+        dbs=result.get("dbs", []),
     )
 
 
@@ -155,13 +173,16 @@ def main() -> str:
 def titles() -> str:
     return render_template("list.html")
 
+
 @app.route("/chart", methods=["GET"])
 def charts() -> str:
     return render_template("chart.html")
 
+
 @app.route("/x", methods=["GET"])
 def charts2() -> str:
     return render_template("x.html")
+
 
 @app.errorhandler(404)
 def page_not_found(e):

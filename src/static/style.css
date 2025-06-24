@@ -106,16 +106,16 @@ body {
     transform: scale(1.1);
 }
 
-.btn:hover {
+.btn2:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-.btn {
+.btn2 {
     transition: all 0.3s ease;
 }
 
-.btn:active {
+.btn2:active {
     transform: translateY(0);
 }
 
@@ -126,7 +126,7 @@ body {
 }
 
 .form-label:hover .fas,
-.btn:hover .fas,
+.btn2:hover .fas,
 .card-footer:hover .fas {
     transform: scale(1.1);
 }

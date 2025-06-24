@@ -1,0 +1,147 @@
+{% extends "main.html" %}
+{% block title %}
+<title>API LOGS</title>
+{% endblock %}
+
+{% block content %}
+</div>
+<div class="col-11">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title mb-0 d-flex align-items-center justify-content-center h4">
+                Most Categories with no result</span>
+            </span>
+        </div>
+        <div class="card-body">
+            <!-- Filter Form -->
+            <form method="get" class="form-inline mb-3 gap-2">
+            </form>
+            <div class="mb-2 text-end">
+                <button id="run_all" class="btn btn-sm btn-outline-primary">🔄 Start All</button>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <table id="main_table" class="table table-striped table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th class="w-50">Title</th>
+                                <th>Count</th>
+                                <th>Get</th>
+                                <th class="w-25">Ar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    function translateCategory(button) {
+        const category = button.data('cat');
+        const spanId = button.data('span');
+        const span = $(`#${spanId}`);
+
+        span.html('<span class="text-muted">Loading ...</span>');
+
+        return $.get(`/api/${category}`)
+            .then(data => {
+                if (data && data.result) {
+                    span.html(`<span class="text-success">${data.result}</span>`);
+                } else {
+                    span.html(`<span class="text-danger">no result</span>`);
+                }
+            })
+            .catch(() => {
+                span.html(`<span class="text-warning">Error</span>`);
+            });
+    }
+
+    const end_point = "/api/logs?table_name=logs&per_page=200&order_by=response_count&order=DESC&status=no_result";
+
+    const table_data = {
+        ajax: {
+            url: end_point,
+            type: 'GET',
+            dataType: 'json',
+            dataSrc: "logs"
+        },
+        paging: false,
+        info: false,
+        searching: false,
+        order: [],
+        columns: [
+            {
+                data: null,
+                render: (_, __, ___, meta) => meta.row + 1
+            },
+            {
+                data: 'request_data',
+                render: function (data) {
+                    return `<a href="https://en.wikipedia.org/wiki/${data}" target="_blank">${data}</a>`;
+                }
+            },
+            {
+                data: 'response_count',
+                render: function (data) {
+                    return Number(data).toLocaleString();
+                }
+            },
+            {
+                data: "request_data",
+                title: "Get",
+                render: function (data, type, row, meta) {
+                    const encodedCategory = encodeURIComponent(data);
+                    const spanId = `result-${meta.row}`;
+                    const btnId = `btn-${meta.row}`;
+                    return `
+                        <button class="btn btn-outline-secondary btn-sm rounded-circle p-1" data-bs-toggle="tooltip"
+                        id="${btnId}" data-cat="${encodedCategory}" data-span="${spanId}"
+                        >Get</button>
+                        `;
+                }
+            }
+            ,
+            {
+                data: "request_data",
+                title: "Ar",
+                render: function (data, type, row, meta) {
+                    const spanId = `result-${meta.row}`;
+                    return `<span id="${spanId}"></span>`;
+                }
+            }
+
+        ]
+    };
+
+    $(document).ready(function () {
+        // ---
+        $("#main_table").DataTable(table_data);
+        // ---
+        $('#main_table').on('click', 'button', function () {
+            translateCategory($(this));
+        });
+        // ---
+        $('#run_all').on('click', async function () {
+            const button = $(this);
+            const originalText = button.html();
+
+            button.prop('disabled', true).html('⏳ Loading...');
+
+            const allButtons = $('#main_table').find('[data-cat]').toArray();
+
+            for (const el of allButtons) {
+                await translateCategory($(el));
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+
+            button.prop('disabled', false).html(originalText);
+        });
+
+    });
+</script>
+{% endblock %}
