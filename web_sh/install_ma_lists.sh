@@ -44,7 +44,13 @@ fi
 # find "$CLONE_DIR" -type f ! -name "*.py" -exec rm -rf {} \;
 
 # Copy the required files to the target directory
-cp -rf "$CLONE_DIR/"* "$TARGET_DIR/" -v
+# cp -rf "$CLONE_DIR/"* "$TARGET_DIR/" -v
+
+if [ -d "$CLONE_DIR/src" ]; then
+    cp -rf "$CLONE_DIR/src/"* "$TARGET_DIR/" -v
+else
+    cp -rf "$CLONE_DIR/"* "$TARGET_DIR/" -v
+fi
 
 # Optional: Set permissions
 # chmod -R 6770 "$TARGET_DIR"
