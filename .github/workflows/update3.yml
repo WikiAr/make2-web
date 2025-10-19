@@ -44,7 +44,8 @@ jobs:
               ~/make2-web/web_sh/install_ma_lists.sh ${{ secrets.GF_TOKEN }} &&
               ~/make2-web/web_sh/update1.sh &&
               rm -rf ~/make2-web &&
+              echo \"Updated on: $(date '+%Y-%m-%d %H:%M:%S')\" > ~/update_from_github &&
               toolforge-webservice python3.11 stop &&
               toolforge-webservice python3.11 start &&
-              echo 'done..'
             "
+            rm -rf web_make2_temp
