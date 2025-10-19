@@ -46,7 +46,8 @@ jobs:
               ~/web_sh/update1.sh &&
               rm -rf ~/make2-web &&
               echo \"Updated on: $(date '+%Y-%m-%d %H:%M:%S')\" > ~/update_from_github &&
+              toolforge-jobs run pipup --image python3.11 --command "~/web_sh/install_req.sh" --wait &&
               toolforge-webservice python3.11 stop &&
-              toolforge-webservice python3.11 start &&
+              toolforge-webservice python3.11 start
             "
             rm -rf web_make2_temp
