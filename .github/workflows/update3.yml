@@ -16,6 +16,17 @@ jobs:
           echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE" # /home/runner/work/svg_translate/svg_translate # ls -al
 
       - name: Copy files to server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: 22
+          source: "./"
+          target: "~/web_make2_temp"
+          rm: true
+
+      - name: Deploy on Toolforge
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
@@ -27,7 +38,7 @@ jobs:
           script: |
             become armake bash -lc "
               rm -rf ~/make2-web &&
-              git clone https://github.com/WikiAr/make2-web.git &&
+              cp -r /mnt/nfs/labstore-secondary-tools-home/${{ secrets.USERNAME }}/web_make2_temp ~/make2-web &&
               chmod -R 770 ~/make2-web &&
               ~/make2-web/web_sh/install_make2.sh ${{ secrets.GF_TOKEN }} &&
               ~/make2-web/web_sh/install_ma_lists.sh ${{ secrets.GF_TOKEN }} &&
