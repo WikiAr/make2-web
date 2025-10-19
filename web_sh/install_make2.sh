@@ -17,7 +17,7 @@ TARGET_DIR="$HOME/www/python/bots/make2"
 if [ ! -d "$TARGET_DIR" ]; then
     mkdir -p "$TARGET_DIR"
     echo "Directory created: $TARGET_DIR"
-    chmod 6770 "$TARGET_DIR"
+    chmod 770 "$TARGET_DIR"
 else
     echo "Directory already exists: $TARGET_DIR"
 fi
@@ -44,11 +44,17 @@ cp "$CLONE_DIR/requirements.in" "$TARGET_DIR/requirements.in" -v
 # find "$CLONE_DIR" -type f ! -name "*.py" -exec rm -rf {} \;
 
 # Copy the required files to the target directory
-cp -rf "$CLONE_DIR/"* "$TARGET_DIR/" -v
+# cp -rf "$CLONE_DIR/"* "$TARGET_DIR/" -v
+
+if [ -d "$CLONE_DIR/src" ]; then
+    cp -rf "$CLONE_DIR/src/"* "$TARGET_DIR/" -v
+else
+    cp -rf "$CLONE_DIR/"* "$TARGET_DIR/" -v
+fi
 
 # Optional: Set permissions
-# chmod -R 6770 "$TARGET_DIR"
-find "$TARGET_DIR" -type f ! -name "*.pyc" -exec chmod 6770 {} -v \;
+# chmod -R 770 "$TARGET_DIR"
+find "$TARGET_DIR" -type f ! -name "*.pyc" -exec chmod 770 {} -v \;
 find "$TARGET_DIR" -type f -name "*.pyc" -exec rm -rf {} -v \;
 
 # Optional: Install dependencies
