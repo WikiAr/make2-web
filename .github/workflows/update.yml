@@ -19,7 +19,7 @@ jobs:
           script_stop: true
           key: ${{ secrets.KEY }}
           script: |
-            become armake sh -c "
+            become armake bash -lc "
               rm -rf ~/make2-web &&
               git clone https://github.com/WikiAr/make2-web.git &&
               chmod -R 770 ~/make2-web &&
