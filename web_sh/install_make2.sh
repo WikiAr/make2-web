@@ -17,7 +17,7 @@ TARGET_DIR="$HOME/www/python/bots/make2"
 if [ ! -d "$TARGET_DIR" ]; then
     mkdir -p "$TARGET_DIR"
     echo "Directory created: $TARGET_DIR"
-    chmod 6770 "$TARGET_DIR"
+    chmod 770 "$TARGET_DIR"
 else
     echo "Directory already exists: $TARGET_DIR"
 fi
@@ -53,8 +53,8 @@ else
 fi
 
 # Optional: Set permissions
-# chmod -R 6770 "$TARGET_DIR"
-find "$TARGET_DIR" -type f ! -name "*.pyc" -exec chmod 6770 {} -v \;
+# chmod -R 770 "$TARGET_DIR"
+find "$TARGET_DIR" -type f ! -name "*.pyc" -exec chmod 770 {} -v \;
 find "$TARGET_DIR" -type f -name "*.pyc" -exec rm -rf {} -v \;
 
 # Optional: Install dependencies
