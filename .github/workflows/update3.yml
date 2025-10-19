@@ -40,9 +40,10 @@ jobs:
               rm -rf ~/make2-web &&
               cp -r /mnt/nfs/labstore-secondary-tools-home/${{ secrets.USERNAME }}/web_make2_temp ~/make2-web &&
               chmod -R 770 ~/make2-web &&
-              ~/make2-web/web_sh/install_make2.sh ${{ secrets.GF_TOKEN }} &&
-              ~/make2-web/web_sh/install_ma_lists.sh ${{ secrets.GF_TOKEN }} &&
-              ~/make2-web/web_sh/update1.sh &&
+              cp -rf ~/make2-web/web_sh/*.sh ~/web_sh -v &&
+              ~/web_sh/install_make2.sh ${{ secrets.GF_TOKEN }} &&
+              ~/web_sh/install_ma_lists.sh ${{ secrets.GF_TOKEN }} &&
+              ~/web_sh/update1.sh &&
               rm -rf ~/make2-web &&
               echo \"Updated on: $(date '+%Y-%m-%d %H:%M:%S')\" > ~/update_from_github &&
               toolforge-webservice python3.11 stop &&
