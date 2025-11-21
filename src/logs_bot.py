@@ -55,7 +55,8 @@ def view_logs(request):
         order_by = "timestamp"
     # ---
     # [{'response_status': 'no_result', 'numbers': 10066}, {'response_status': 'success', 'numbers': 12}
-    status_table = logs_db.get_response_status(table_name=table_name)
+    # status_table = logs_db.get_response_status(table_name=table_name)
+    status_table = ["no_result"]
     # ---
     status = status if (status in status_table or status == "Category") else ""
     # ---
@@ -196,6 +197,41 @@ def logs_by_day(request):
             # "order": order,
             # "order_by": order_by,
         }
+    }
+    # ---
+    return data
+
+
+def all_logs_en2ar(request):
+    # ---
+    db_path = request.args.get("db_path")
+    # ---
+    if db_path:
+        dbs = logs_db.change_db_path(db_path)
+        # ---
+        db_path = db_path if db_path in dbs else "new_logs.db"
+    # ---
+    table_name = request.args.get("table_name", "")
+    # ---
+    if table_name not in db_tables:
+        table_name = "logs"
+    # ---
+    logs_data = logs_db.all_logs_en2ar(table_name=table_name)
+    # ---
+    data_no_result = [x for x, v in logs_data.items() if v == "no_result"]
+    data_result = {x: v for x, v in logs_data.items() if v != "no_result"}
+    # ---
+    sum_all = len(logs_data)
+    # ---
+    data = {
+        "tab": {
+            "sum_all": f"{sum_all:,}",
+            "sum_data_result": f"{len(data_result):,}",
+            "sum_no_result": f"{len(data_no_result):,}",
+            "table_name": table_name,
+        },
+        "no_result": data_no_result,
+        "data_result": data_result,
     }
     # ---
     return data
