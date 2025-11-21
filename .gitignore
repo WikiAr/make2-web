@@ -5,3 +5,4 @@ src/app copy.py
 *.pyc
 *.sql
 /adminer
+*.zip
