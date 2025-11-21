@@ -4,18 +4,17 @@
 from .logs_db.bot import change_db_path, db_commit, init_db, fetch_all
 
 """
-import os
 import re
-import sqlite3
-from pathlib import Path
 
 try:
     from .db import change_db_path as _change_db_path, db_commit, init_db, fetch_all
 except ImportError:
     from db import change_db_path as _change_db_path, db_commit, init_db, fetch_all
 
+
 def change_db_path(file):
     return _change_db_path(file)
+
 
 def log_request(endpoint, request_data, response_status, response_time):
     # ---
@@ -149,6 +148,7 @@ def get_logs(per_page=10, offset=0, order="DESC", order_by="timestamp", status="
     # ---
     return logs
 
+
 def logs_by_day(table_name="logs"):
     # ---
     query_by_day = """
@@ -166,5 +166,25 @@ def logs_by_day(table_name="logs"):
         """.format(table_name=table_name)
     # ---
     result = fetch_all(query_by_day, ())
+    # ---
+    return result
+
+
+def all_logs_en2ar(table_name="logs"):
+    # ---
+    query_by_day = """
+        SELECT
+            request_data,
+            response_status
+        FROM
+            {table_name}
+        GROUP BY request_data, response_status
+        ORDER BY request_data
+        ;
+        """.format(table_name=table_name)
+    # ---
+    data = fetch_all(query_by_day, ())
+    # ---
+    result = {x["request_data"] : x["response_status"] for x in data}
     # ---
     return result

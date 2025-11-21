@@ -43,6 +43,20 @@ def get_logs_by_day() -> str:
     return jsonify(result)
 
 
+@app.route("/api/all", methods=["GET"])
+def get_logs_all() -> str:
+    result = logs_bot.all_logs_en2ar(request)
+    # ---
+    return jsonify(result)
+
+
+@app.route("/api/status", methods=["GET"])
+def get_status_table() -> str:
+    result = logs_db.get_response_status()
+    # ---
+    return jsonify(result)
+
+
 @app.route("/api/<title>", methods=["GET"])
 def get_title(title) -> str:
     # ---
