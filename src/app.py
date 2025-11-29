@@ -51,6 +51,28 @@ def get_logs_all(day=None) -> str:
     return jsonify(result)
 
 
+@app.route("/api/category", methods=["GET"])
+@app.route("/api/category/<day>", methods=["GET"])
+def get_logs_category(day=None) -> str:
+    result = logs_bot.all_logs_en2ar(day)
+    # ---
+    if "no_result" in result:
+        del result["no_result"]
+    # ---
+    return jsonify(result)
+
+
+@app.route("/api/no_result", methods=["GET"])
+@app.route("/api/no_result/<day>", methods=["GET"])
+def get_logs_no_result(day=None) -> str:
+    result = logs_bot.all_logs_en2ar(day)
+    # ---
+    if "data_result" in result:
+        del result["data_result"]
+    # ---
+    return jsonify(result)
+
+
 @app.route("/api/status", methods=["GET"])
 def get_status_table() -> str:
     result = logs_db.get_response_status()
