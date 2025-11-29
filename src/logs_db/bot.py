@@ -179,9 +179,14 @@ def all_logs_en2ar(day=None):
     # ---
     params = []
     # ---
-    if day and re.match(r"\d{4}-\d{2}-\d{2}", day):
-        query_by_day += " \n where date_only = ? \n "
-        params.append(day)
+    if day:
+        if re.match(r"\d{4}-\d{2}-\d{2}", day):
+            query_by_day += " \n where date_only = ? \n "
+            params.append(day)
+
+        elif re.match(r"\d{4}-\d{2}", day):
+            query_by_day += " \n where strftime('%Y-%m', date_only) = ? \n "
+            params.append(day)
     # ---
     query_by_day += """
         GROUP BY request_data, response_status
