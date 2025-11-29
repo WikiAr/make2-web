@@ -44,8 +44,9 @@ def get_logs_by_day() -> str:
 
 
 @app.route("/api/all", methods=["GET"])
-def get_logs_all() -> str:
-    result = logs_bot.all_logs_en2ar(request)
+@app.route("/api/all/<day>", methods=["GET"])
+def get_logs_all(day=None) -> str:
+    result = logs_bot.all_logs_en2ar(day)
     # ---
     return jsonify(result)
 
