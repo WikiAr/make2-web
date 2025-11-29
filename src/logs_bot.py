@@ -202,21 +202,9 @@ def logs_by_day(request):
     return data
 
 
-def all_logs_en2ar(request):
+def all_logs_en2ar(day=None):
     # ---
-    db_path = request.args.get("db_path")
-    # ---
-    if db_path:
-        dbs = logs_db.change_db_path(db_path)
-        # ---
-        db_path = db_path if db_path in dbs else "new_logs.db"
-    # ---
-    table_name = request.args.get("table_name", "")
-    # ---
-    if table_name not in db_tables:
-        table_name = "logs"
-    # ---
-    logs_data = logs_db.all_logs_en2ar(table_name=table_name)
+    logs_data = logs_db.all_logs_en2ar(day=day)
     # ---
     data_no_result = [x for x, v in logs_data.items() if v == "no_result"]
     data_result = {x: v for x, v in logs_data.items() if v != "no_result"}
@@ -228,7 +216,6 @@ def all_logs_en2ar(request):
             "sum_all": f"{sum_all:,}",
             "sum_data_result": f"{len(data_result):,}",
             "sum_no_result": f"{len(data_no_result):,}",
-            "table_name": table_name,
         },
         "no_result": data_no_result,
         "data_result": data_result,

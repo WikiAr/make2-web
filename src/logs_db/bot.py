@@ -170,20 +170,27 @@ def logs_by_day(table_name="logs"):
     return result
 
 
-def all_logs_en2ar(table_name="logs"):
+def all_logs_en2ar(day=None):
     # ---
     query_by_day = """
-        SELECT
-            request_data,
-            response_status
-        FROM
-            {table_name}
-        GROUP BY request_data, response_status
-        ORDER BY request_data
-        ;
-        """.format(table_name=table_name)
+        SELECT request_data, response_status
+        FROM logs
+    """
     # ---
-    data = fetch_all(query_by_day, ())
+    params = []
+    # ---
+    if day and re.match(r"\d{4}-\d{2}-\d{2}", day):
+        query_by_day += " \n where date_only = ? \n "
+        params.append(day)
+    # ---
+    query_by_day += """
+        GROUP BY request_data, response_status
+        ORDER BY request_data;
+    """
+    # ---
+    print(query_by_day, day)
+    # ---
+    data = fetch_all(query_by_day, params)
     # ---
     result = {x["request_data"] : x["response_status"] for x in data}
     # ---
