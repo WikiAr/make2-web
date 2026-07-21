@@ -4,7 +4,7 @@
 # ============================================
 [tool.black]
 line-length = 120
-target-version = ["py310"]
+target-version = ["py313"]
 include = '\.pyi?$'
 exclude = '''
     /(
@@ -17,6 +17,8 @@ exclude = '''
       | buck-out
       | build
       | dist
+      | typings
+      | site-packages
     )/
 '''
 
@@ -72,6 +74,7 @@ exclude = [
     ".tox",
     ".venv",
     ".vscode",
+    "typings",
     "__pypackages__",
     "_build",
     "buck-out",
@@ -79,20 +82,129 @@ exclude = [
     "build",
     "dist",
     "site-packages",
+    "**/site-packages/**",
     "venv",
 ]
 line-length = 120
 target-version = "py313"
+fix = true
 
 [tool.ruff.format]
 # Allow Ruff/Black to maintain vertical list formatting
 skip-magic-trailing-comma = false
 
-[tool.ruff.lint]
-ignore = ["E402", "E225", "E226", "E227", "E228", "E252", "E501", "F841", "E224", "E203", "F401"]
+# Keep Black-like behavior
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
 
+# Format code blocks inside docstrings (excellent for README-like docstrings)
+docstring-code-format = true
+docstring-code-line-length = 120
+
+[tool.ruff.lint]
+# "E402", "E225", "E226", "E227", "E228", "E252", "F841", "E224", "E203", "F401",
+ignore = [
+    "E501", # Line too long
+    # "F841",  # Local variable is assigned to but never used
+    # "N802",  # Function name should be lowercase
+    # "N806",  # Variable in function should be lowercase
+    # "UP007", # Use `X | Y` for type annotations instead of `Optional[X]`
+    "UP031", # Use format specifiers instead of percent format
+    # "UP045", # Use `X | None` instead of `Optional[X]`
+    # "UP006",  # Use `list` instead of `List` for type annotations
+    # "UP035",  # Use `X | Y` for type unions instead of `Union[X, Y]`
+    # "I001",   # Import block is un-sorted or un-formatted
+    # "N999",   # Invalid module name
+    # "UP015",  # Unnecessary open mode parameters
+]
+select = [
+    "E",       # pycodestyle (error)
+    "F",       # pyflakes
+    "W",       # pycodestyle (warning)
+    "B",       # flake8-bugbear
+    "I",       # isort
+    "N",       # pep8-naming
+    "PIE",     # flake8-pie
+    "PLE",     # pylint error
+    "RUF100",  # Unused noqa comments
+    "PGH004",  # blanket noqa comments
+    "UP",      # pyupgrade
+    "C4",      # flake8-comprehensions
+    "SIM101",  # merge duplicate isinstance calls
+    "SIM201",
+    "SIM202",
+    "SIM222",
+    "SIM223",  # flake8-simplify
+    "FURB168", # Prefer is operator over isinstance for None checks
+    "FURB169", # Do not use is comparison with type(None). Use None
+    "FURB187", # avoid list reverse copy
+    "FURB188", # use str.remove(pre|suf)fix
+    "ISC001",  # implicitly concatenated string
+    "RET501",
+    "RET502",  # better return None handling
+]
 # ============================================
 #                 Flynt
 # ============================================
 [tool.flynt]
+# Keep it aligned with Black/Ruff
 line_length = 120
+
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+
+[tool.pylint.messages_control]
+max-line-length = 120
+disable = [
+    "C0111", # missing-docstring
+    "C0103", # invalid-name
+    "R0913", # too-many-arguments
+]
+
+
+[tool.pyright]
+# Target Python version for type analysis
+pythonVersion = "3.13"
+stubPath = "typings"
+# Paths to include and exclude from checking
+include = ["src", "src/new"]
+exclude = [
+    "typings",
+    "**/node_modules",
+    "**/__pycache__",
+    ".venv",
+    "**/i18n/**",
+    "**/.venv/**",
+    "**/OLD_REPOS/*.py",
+    "**/OLD_REPOS/**",
+    "**/old/*.py",
+    "**/old/**",
+    "**/OLD_REPOS/**",
+    "**/.vscode/**",
+    "**/core8/**",
+    "**/setuptools/**",
+    "**/$RECYCLE.BIN/**",
+    "**/MagicMock/**",
+    "**/venv/**",
+    "**/OldCodes/**",
+    "**/.pytest_cache/**",
+    "**/MagicMock/**",
+    "**/vendor",
+    "**/vendor/**",
+    "C:/Program_Files/**",
+    "C:/Users/Himo/.vscode/extensions/**",
+    "C:/Program Files/Python313/Lib/site-packages/**",
+]
+
+# Diagnostic modes: "basic" or "standard" or "strict"
+typeCheckingMode = "standard"
+
+# Automatically find virtual environments
+venvPath = "."
+venv = ".venv"
+
